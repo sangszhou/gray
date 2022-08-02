@@ -29,7 +29,7 @@ public class NodeRunner {
             switch (node.getType()) {
                 case MANY:
                     TriggerMany(node);
-                case BASIC:
+                case ATOM:
                     triggerBasic(node);
                 case BLOCK:
                     triggerBlock(node);
@@ -50,7 +50,7 @@ public class NodeRunner {
                     queryMany(node);
                 case BLOCK:
                     queryBlock(node);
-                case BASIC:
+                case ATOM:
                     queryBasic(node);
                 default:
                     logger.error("unsupported query node");

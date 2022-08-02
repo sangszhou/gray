@@ -17,7 +17,7 @@ public class AtomTaskBuilder extends TaskBuilder {
 
     @Override
     public Node build() {
-        thisNode.setType(NodeType.BASIC);
+        thisNode.setType(NodeType.ATOM);
         return thisNode;
     }
 

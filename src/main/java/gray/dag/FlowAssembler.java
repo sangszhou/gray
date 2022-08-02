@@ -1,12 +1,10 @@
 package gray.dag;
 
-import com.fasterxml.jackson.databind.ser.std.ClassSerializer;
 import gray.engine.Node;
 import gray.engine.NodeType;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 public class FlowAssembler {
     List<Node> nodes = new LinkedList<>();
@@ -24,7 +22,7 @@ public class FlowAssembler {
     Node doPushTask(Class clz) {
         Node node = new Node();
         node.setClzName(clz.getSimpleName());
-        node.setType(NodeType.BASIC);
+        node.setType(NodeType.ATOM);
         return node;
     }
 
