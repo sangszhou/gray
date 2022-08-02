@@ -1,31 +1,33 @@
-package gray.builder;
+package gray.builder.types;
 
+import gray.builder.TaskBuilder;
 import gray.engine.Node;
 import gray.engine.NodeType;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class ManyTaskBuilder extends TaskBuilder {
-    Node manyNode = new Node();
+public class RootTaskBuilder extends TaskBuilder {
     List<Node> subNodeList = new LinkedList<>();
 
-    public ManyTaskBuilder() {
-        manyNode.setType(NodeType.MANY);
+    Node thisNode = new Node();
+
+    public RootTaskBuilder() {
+        thisNode.setType(NodeType.STARTER);
     }
 
     @Override
     public Node build() {
         for (Node node : subNodeList) {
-            manyNode.getSubNodeList().add(node);
+//            node.setPreId(thisNode.getId());
+            node.setWrapperId(thisNode.getId());
         }
-        return manyNode;
+        return thisNode;
     }
 
+    @Override
     public TaskBuilder addTask(TaskBuilder taskBuilder) {
         Node node = taskBuilder.build();
-        node.setPreId(manyNode.getId());
-        node.setWrapperId(manyNode.getId());
         subNodeList.add(node);
         return this;
     }

@@ -3,14 +3,14 @@ package gray.builder;
 import gray.engine.Node;
 import gray.engine.NodeType;
 
-public class BasicTaskBuilder extends TaskBuilder {
+public class AtomTaskBuilder extends TaskBuilder {
     Node thisNode = new Node();
 
-    public BasicTaskBuilder() {
+    public AtomTaskBuilder() {
         thisNode.setType(NodeType.BASIC);
     }
 
-    public BasicTaskBuilder(Class clz, String name) {
+    public AtomTaskBuilder(Class clz, String name) {
         this.cls = clz;
         this.name = name;
     }

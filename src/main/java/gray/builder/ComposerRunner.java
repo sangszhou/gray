@@ -1,6 +1,6 @@
 package gray.builder;
 
-import gray.builder.types.StarterTaskBuilder;
+import gray.builder.types.RootTaskBuilder;
 import gray.engine.Node;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -9,7 +9,7 @@ public class ComposerRunner {
     NodeDao nodeDao;
 
     void run(ComposerBuilder composerBuilder) {
-        StarterTaskBuilder starterTaskBuilder = composerBuilder.build();
+        RootTaskBuilder starterTaskBuilder = composerBuilder.build();
         Node root = starterTaskBuilder.build();
         traversal(root);
     }

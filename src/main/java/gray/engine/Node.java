@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class Node {
+    // 所属的 flow id
+    String flowId;
     String id = UUID.randomUUID().toString();
     String clzName;
     String preId = UUID.randomUUID().toString();
@@ -15,6 +17,15 @@ public class Node {
     // 0 -> parent 外层, 1 -> many, 2 -> block 类型
     NodeType type;
     FlowAssembler ref;
+    NodeStatus status;
+
+    public NodeStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(NodeStatus status) {
+        this.status = status;
+    }
 
     List<Node> subNodeList = new LinkedList<>();
 

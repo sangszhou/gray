@@ -6,11 +6,11 @@ import gray.engine.NodeType;
 import java.util.LinkedList;
 import java.util.List;
 
-public class BlockTaskBuilder extends TaskBuilder {
+public class SeqTaskBuilder extends TaskBuilder {
     Node blockNode = new Node();
     List<Node> subNodeList = new LinkedList<>();
 
-    public BlockTaskBuilder() {
+    public SeqTaskBuilder() {
         blockNode.setType(NodeType.BLOCK);
     }
 
@@ -26,9 +26,7 @@ public class BlockTaskBuilder extends TaskBuilder {
         Node node = taskBuilder.build();
         node.setWrapperId(blockNode.getId());
 
-        if (subNodeList.size() == 0) {
-            node.setPreId(blockNode.getId());
-        } else {
+        if (subNodeList.size() > 0) {
             Node preNode = subNodeList.get(subNodeList.size() - 1);
             node.setPreId(preNode.getId());
         }

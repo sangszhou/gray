@@ -1,7 +1,8 @@
 package gray.builder;
 
-import gray.builder.types.StarterTaskBuilder;
+import gray.builder.types.RootTaskBuilder;
+import gray.domain.FlowInput;
 
 public interface ComposerBuilder {
-     StarterTaskBuilder build();
+     RootTaskBuilder build(FlowInput flowInput);
 }
