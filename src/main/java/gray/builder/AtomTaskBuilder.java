@@ -8,7 +8,6 @@ public class AtomTaskBuilder extends TaskBuilder {
     Node thisNode = new Node();
 
     public AtomTaskBuilder() {
-        thisNode.setType(NodeType.BASIC);
     }
 
     public AtomTaskBuilder(Class<? extends Task> clz, String name) {
@@ -18,6 +17,7 @@ public class AtomTaskBuilder extends TaskBuilder {
 
     @Override
     public Node build() {
+        thisNode.setType(NodeType.BASIC);
         return thisNode;
     }
 

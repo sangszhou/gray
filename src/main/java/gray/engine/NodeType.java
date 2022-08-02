@@ -1,7 +1,7 @@
 package gray.engine;
 
 public enum NodeType {
-    STARTER,
+    ROOT,
     BASIC,
     MANY,
     BLOCK,

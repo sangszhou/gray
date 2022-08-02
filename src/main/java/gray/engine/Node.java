@@ -12,12 +12,12 @@ public class Node {
     String flowId;
     String id = UUID.randomUUID().toString();
     String clzName;
-    String preId = UUID.randomUUID().toString();
+    String preId;
     String wrapperId;
     // 0 -> parent 外层, 1 -> many, 2 -> block 类型
     NodeType type;
-    FlowAssembler ref;
-    NodeStatus status;
+    // 初始化为 invalid
+    NodeStatus status = NodeStatus.INVALID;
 
     public String getFlowId() {
         return flowId;
@@ -45,20 +45,12 @@ public class Node {
         this.subNodeList = subNodeList;
     }
 
-    public FlowAssembler getRef() {
-        return ref;
-    }
-
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public void setRef(FlowAssembler ref) {
-        this.ref = ref;
     }
 
     public String getClzName() {

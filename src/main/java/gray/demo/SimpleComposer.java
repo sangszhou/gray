@@ -7,6 +7,7 @@ import gray.builder.SeqTaskBuilder;
 import gray.builder.types.RootTaskBuilder;
 import gray.domain.FlowInput;
 
+
 public class SimpleComposer extends ComposerBuilder {
 
     public RootTaskBuilder doBuild(FlowInput flowInput) {

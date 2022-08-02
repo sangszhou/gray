@@ -10,17 +10,17 @@ import java.util.List;
 
 public class RootTaskBuilder extends TaskBuilder {
     List<Node> subNodeList = new LinkedList<>();
-
     Node thisNode = new Node();
 
     public RootTaskBuilder() {
-        thisNode.setType(NodeType.STARTER);
     }
 
     @Override
     public Node build() {
+        thisNode.setType(NodeType.ROOT);
         for (Node node : subNodeList) {
             node.setWrapperId(thisNode.getId());
+            thisNode.getSubNodeList().add(node);
         }
         thisNode.setStatus(NodeStatus.INIT);
         return thisNode;
@@ -29,6 +29,10 @@ public class RootTaskBuilder extends TaskBuilder {
     @Override
     public TaskBuilder addTask(TaskBuilder taskBuilder) {
         Node node = taskBuilder.build();
+        if (subNodeList.size() > 0) {
+            Node preNode = subNodeList.get(subNodeList.size() - 1);
+            node.setPreId(preNode.getId());
+        }
         subNodeList.add(node);
         return this;
     }

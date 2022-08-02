@@ -2,24 +2,37 @@ package gray.builder;
 
 import gray.engine.Node;
 import gray.engine.NodeStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.LinkedList;
 import java.util.List;
 
 @Service
 public class NodeDaoInMem implements NodeDao {
+    Logger logger = LoggerFactory.getLogger(getClass());
 
     List<Node> nodeList = new LinkedList<>();
 
+//    @PostConstruct
+//    public void init() {
+//        logger.info("node dao item init");
+//    }
+
     @Override
     public void save(Node node) {
+        logger.info("save node {},  {}, {}, {}", node.getType(), node.getId(), node.getPreId(), node.getWrapperId());
         nodeList.add(node);
     }
 
     @Override
     public Node getById(String id) {
-        return null;
+        return nodeList.stream()
+                .filter(node -> node.getId().equals(id))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override

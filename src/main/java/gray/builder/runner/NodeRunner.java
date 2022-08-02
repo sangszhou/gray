@@ -23,6 +23,7 @@ public class NodeRunner {
     // rate 10 seconds
     @Scheduled(fixedRate = 5*1000)
     public void trigger() {
+        logger.info("trigger cron job running");
         List<Node> initNode = nodeDao.queryNodes(NodeStatus.INIT);
         for (Node node : initNode) {
             switch (node.getType()) {
@@ -32,6 +33,8 @@ public class NodeRunner {
                     triggerBasic(node);
                 case BLOCK:
                     triggerBlock(node);
+                case ROOT:
+                    triggerRoot(node);
                 default:
                     System.out.println("unsupported node type: " + node.getType());
             }
@@ -81,123 +84,55 @@ public class NodeRunner {
         }
     }
 
+    public void triggerRoot(Node root) {
+           root.setStatus(NodeStatus.QUERY);
+    }
 
-    public void triggerBlock(Node blockNode) {
+    public void queryRoot(Node root) {
+
+    }
+
+    public void queryWrapperNode(Node wrapNode) {
         Node wrapperSelector = new Node();
-        wrapperSelector.setWrapperId(blockNode.getId());
+        wrapperSelector.setWrapperId(wrapNode.getId());
         List<Node> wrappedNode = nodeDao.queryBySelector(wrapperSelector);
         if (wrappedNode.size() == 0) {
-            blockNode.setStatus(NodeStatus.SUCCESS);
-            nodeDao.save(blockNode);
+            wrapNode.setStatus(NodeStatus.SUCCESS);
+            nodeDao.save(wrapNode);
             return;
         }
-
-        blockNode.setStatus(NodeStatus.RUNNING);
+        boolean hasFail = false;
         for (Node node : wrappedNode) {
-            node.setStatus(NodeStatus.INIT);
-            nodeDao.save(node);
+            if (node.getStatus() != NodeStatus.FAIL && node.getStatus() != NodeStatus.SUCCESS) {
+                return;
+            }
+            if (node.getStatus().equals(NodeStatus.FAIL)) {
+                hasFail = true;
+            }
         }
-        nodeDao.save(blockNode);
+        if (hasFail) {
+            wrapNode.setStatus(NodeStatus.FAIL);
+        } else {
+            wrapNode.setStatus(NodeStatus.SUCCESS);
+        }
+        nodeDao.save(wrapNode);
+    }
+
+
+    public void triggerBlock(Node blockNode) {
+        blockNode.setStatus(NodeStatus.QUERY);
     }
 
     public void queryBlock(Node blockNode) {
-        Node wrapperSelector = new Node();
-        wrapperSelector.setWrapperId(blockNode.getId());
-        List<Node> wrappedNode = nodeDao.queryBySelector(wrapperSelector);
-        if (wrappedNode.size() == 0) {
-            blockNode.setStatus(NodeStatus.SUCCESS);
-            nodeDao.save(blockNode);
-            return;
-        }
-
-//        blockNode.setStatus(NodeStatus.RUNNING);
-        boolean hasFail = false;
-        for (Node node : wrappedNode) {
-            if (node.getStatus() != NodeStatus.FAIL && node.getStatus() != NodeStatus.SUCCESS) {
-                return;
-            }
-            if (node.getStatus().equals(NodeStatus.FAIL)) {
-                hasFail = true;
-            }
-        }
-
-        if (hasFail) {
-            blockNode.setStatus(NodeStatus.FAIL);
-        } else {
-            blockNode.setStatus(NodeStatus.SUCCESS);
-        }
-
-        nodeDao.save(blockNode);
-
-        // 驱动后续节点
-        if(hasFail) {
-            // 后续节点直接设置成跳过
-        } else {
-            // quick path, 可以靠主动探测.
-            // 后续节点设置为 init
-            Node nodeSelector = new Node();
-            nodeSelector.setPreId(blockNode.getId());
-            List<Node> successors = nodeDao.queryBySelector(nodeSelector);
-            for (Node node : successors) {
-                if (node.getStatus().equals(NodeStatus.INVALID)) {
-                    node.setStatus(NodeStatus.INIT);
-                    nodeDao.save(node);
-                } else {
-                    logger.error("successor's status should be invalid");
-                }
-            }
-        }
+        queryWrapperNode(blockNode);
     }
 
-
     public void TriggerMany(Node manyNode) {
-        Node wrapperSelector = new Node();
-        wrapperSelector.setWrapperId(manyNode.getId());
-        List<Node> wrappedNode = nodeDao.queryBySelector(wrapperSelector);
-        if (wrappedNode.size() == 0) {
-            manyNode.setStatus(NodeStatus.SUCCESS);
-            nodeDao.save(manyNode);
-            return;
-        }
-
         manyNode.setStatus(NodeStatus.QUERY);
-
-        for (Node node : wrappedNode) {
-            node.setStatus(NodeStatus.INIT);
-            nodeDao.save(node);
-        }
-        nodeDao.save(manyNode);
     }
 
     public void queryMany(Node manyNode) {
-        Node wrapperSelector = new Node();
-        wrapperSelector.setWrapperId(manyNode.getId());
-        List<Node> wrappedNode = nodeDao.queryBySelector(wrapperSelector);
-        if (wrappedNode.size() == 0) {
-            manyNode.setStatus(NodeStatus.SUCCESS);
-            nodeDao.save(manyNode);
-            return;
-        }
-
-//        blockNode.setStatus(NodeStatus.RUNNING);
-        boolean hasFail = false;
-        for (Node node : wrappedNode) {
-            if (node.getStatus() != NodeStatus.FAIL && node.getStatus() != NodeStatus.SUCCESS) {
-                // 子节点还没完成
-                return;
-            }
-            if (node.getStatus().equals(NodeStatus.FAIL)) {
-                hasFail = true;
-            }
-        }
-
-        if (hasFail) {
-            manyNode.setStatus(NodeStatus.FAIL);
-        } else {
-            manyNode.setStatus(NodeStatus.SUCCESS);
-        }
-
-        nodeDao.save(manyNode);
+        queryWrapperNode(manyNode);
     }
 
 
