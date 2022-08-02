@@ -1,6 +1,6 @@
 package gray.builder.flow;
 
-import gray.builder.SimpleComposer;
+import gray.demo.SimpleComposer;
 import gray.domain.FlowInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ public class FlowService {
         } catch (IllegalAccessException e) {
             logger.error("IllegalAccessException", e);
         }
-
+        logger.error("failed to start flow");
         return null;
     }
 }

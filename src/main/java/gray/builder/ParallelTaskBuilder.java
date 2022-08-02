@@ -24,7 +24,6 @@ public class ParallelTaskBuilder extends TaskBuilder {
 
     public TaskBuilder addTask(TaskBuilder taskBuilder) {
         Node node = taskBuilder.build();
-//        node.setPreId(manyNode.getId());
         node.setWrapperId(manyNode.getId());
         subNodeList.add(node);
         return this;

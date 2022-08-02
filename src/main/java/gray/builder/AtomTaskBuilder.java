@@ -1,5 +1,6 @@
 package gray.builder;
 
+import gray.dag.Task;
 import gray.engine.Node;
 import gray.engine.NodeType;
 
@@ -10,7 +11,7 @@ public class AtomTaskBuilder extends TaskBuilder {
         thisNode.setType(NodeType.BASIC);
     }
 
-    public AtomTaskBuilder(Class clz, String name) {
+    public AtomTaskBuilder(Class<? extends Task> clz, String name) {
         this.cls = clz;
         this.name = name;
     }

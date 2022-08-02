@@ -8,11 +8,11 @@ public class ComposerRunner {
     @Autowired
     NodeDao nodeDao;
 
-    void run(ComposerBuilder composerBuilder) {
-        RootTaskBuilder starterTaskBuilder = composerBuilder.build();
-        Node root = starterTaskBuilder.build();
-        traversal(root);
-    }
+//    void run(ComposerBuilder composerBuilder) {
+//        RootTaskBuilder starterTaskBuilder = composerBuilder.build();
+//        Node root = starterTaskBuilder.build();
+//        traversal(root);
+//    }
 
     void traversal(Node node) {
         persistentNode(node);

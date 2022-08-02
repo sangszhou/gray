@@ -19,6 +19,14 @@ public class Node {
     FlowAssembler ref;
     NodeStatus status;
 
+    public String getFlowId() {
+        return flowId;
+    }
+
+    public void setFlowId(String flowId) {
+        this.flowId = flowId;
+    }
+
     public NodeStatus getStatus() {
         return status;
     }

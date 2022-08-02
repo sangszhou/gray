@@ -2,6 +2,7 @@ package gray.builder.types;
 
 import gray.builder.TaskBuilder;
 import gray.engine.Node;
+import gray.engine.NodeStatus;
 import gray.engine.NodeType;
 
 import java.util.LinkedList;
@@ -19,9 +20,9 @@ public class RootTaskBuilder extends TaskBuilder {
     @Override
     public Node build() {
         for (Node node : subNodeList) {
-//            node.setPreId(thisNode.getId());
             node.setWrapperId(thisNode.getId());
         }
+        thisNode.setStatus(NodeStatus.INIT);
         return thisNode;
     }
 
