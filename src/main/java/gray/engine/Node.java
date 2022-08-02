@@ -12,6 +12,7 @@ public class Node {
     String flowId;
     String id = UUID.randomUUID().toString();
     String clzName;
+    String nodeName;
     String preId;
     String wrapperId;
     // 0 -> parent 外层, 1 -> many, 2 -> block 类型
@@ -25,6 +26,14 @@ public class Node {
 
     public void setFlowId(String flowId) {
         this.flowId = flowId;
+    }
+
+    public String getNodeName() {
+        return nodeName;
+    }
+
+    public void setNodeName(String nodeName) {
+        this.nodeName = nodeName;
     }
 
     public NodeStatus getStatus() {
