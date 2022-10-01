@@ -141,6 +141,7 @@ public class NodeRunner {
         Task taskInst = null;
         try {
             taskInst = (Task) clz.newInstance();
+            // todo 所有需要的参数都要提供出来
             StageResult stageResult = taskInst.execute();
             if (stageResult.getCode() == 2) {
                 // success, 进入到 query 阶段

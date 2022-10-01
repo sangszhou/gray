@@ -12,6 +12,14 @@ public abstract class TaskBuilder {
     public abstract Node build();
     public abstract TaskBuilder addTask(TaskBuilder taskBuilder);
 
+    public TaskBuilder linkConst(String destName, Object destValue) {
+        return this;
+    }
+
+    public TaskBuilder linkDynamic(String taskName, String sourceName,
+                                   String destName, Object argValue) {
+        return this;
+    }
 
     public Class getCls() {
         return cls;
