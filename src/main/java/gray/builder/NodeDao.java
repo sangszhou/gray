@@ -10,6 +10,8 @@ public interface NodeDao {
 
     Node getById(String id);
 
+    Node getByName(String flowId, String taskName);
+
     List<Node> queryNodes(NodeStatus nodeStatus);
 
     List<Node> queryBySelector(Node node);

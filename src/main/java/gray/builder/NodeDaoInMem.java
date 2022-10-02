@@ -36,6 +36,12 @@ public class NodeDaoInMem implements NodeDao {
     }
 
     @Override
+    public Node getByName(String flowId, String taskName) {
+        // 根据 flow
+        return null;
+    }
+
+    @Override
     public List<Node> queryNodes(NodeStatus status) {
         List<Node> nodes = new LinkedList<>();
         for (Node node : nodeList) {

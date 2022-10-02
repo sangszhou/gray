@@ -13,12 +13,12 @@ public abstract class TaskBuilder {
     public abstract TaskBuilder addTask(TaskBuilder taskBuilder);
 
     public TaskBuilder linkConst(String destName, Object destValue) {
-        return this;
+        throw new RuntimeException("not supported");
     }
 
     public TaskBuilder linkDynamic(String taskName, String sourceName,
-                                   String destName, Object argValue) {
-        return this;
+                                   String destName) {
+        throw new RuntimeException("not supported");
     }
 
     public Class getCls() {

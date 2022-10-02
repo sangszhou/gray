@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+// 还是逻辑态的对象
 public class Node {
     // 所属的 flow id
     String flowId;
@@ -19,6 +20,24 @@ public class Node {
     NodeType type;
     // 初始化为 invalid
     NodeStatus status = NodeStatus.INVALID;
+    List<ParamLinker> paramLinkerList;
+    List<NodeData> nodeDataList;
+
+    public List<NodeData> getNodeDataList() {
+        return nodeDataList;
+    }
+
+    public void setNodeDataList(List<NodeData> nodeDataList) {
+        this.nodeDataList = nodeDataList;
+    }
+
+    public List<ParamLinker> getParamLinkerList() {
+        return paramLinkerList;
+    }
+
+    public void setParamLinkerList(List<ParamLinker> paramLinkerList) {
+        this.paramLinkerList = paramLinkerList;
+    }
 
     public String getFlowId() {
         return flowId;

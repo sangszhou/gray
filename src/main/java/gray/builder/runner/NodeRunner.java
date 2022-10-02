@@ -1,17 +1,25 @@
 package gray.builder.runner;
 
 import gray.builder.NodeDao;
+import gray.builder.annotation.Input;
 import gray.dag.Task;
 import gray.domain.StageResult;
 import gray.engine.Node;
+import gray.engine.NodeData;
 import gray.engine.NodeStatus;
+import gray.engine.ParamLinker;
+import gray.util.ClzUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class NodeRunner {
@@ -141,7 +149,7 @@ public class NodeRunner {
         Task taskInst = null;
         try {
             taskInst = (Task) clz.newInstance();
-            // todo 所有需要的参数都要提供出来
+            // todo 所有 input 都要 set 进去. 这里还得区分 composerBuilder 和 taskBuilder
             StageResult stageResult = taskInst.execute();
             if (stageResult.getCode() == 2) {
                 // success, 进入到 query 阶段
@@ -156,6 +164,70 @@ public class NodeRunner {
         } catch (IllegalAccessException exp) {
             logger.error("init task failed", exp);
         }
+    }
+
+    public void buildAtomTaskNode(Node basicNode) {
+        // 1. 获取所有 input 注解标注的
+        // 2. 因为是存储过的, 所以 class 需要从 clzName 中获取,
+        // 这里为了简单起见, 不再从 clz name 中获取
+        // 3.
+//        String clzName = basicNode.getClzName();
+        Class clz = ClzUtils.castTo(basicNode.getClzName());
+        List<Field> fieldList = ClzUtils.getFieldsWithAnnotation(clz, Input.class);
+
+//        Field[] fieldList = clz.getFields();
+//        List<Field> inputFieldList = new LinkedList<>();
+//        // 查找所有的 input field 字段
+//        for (int i = 0; i < fieldList.length; i++) {
+//            Field field = fieldList[i];
+//            Annotation[] annotations = field.getAnnotations();
+//            for (int j = 0; j < annotations.length; j++) {
+//                if (annotations[j].annotationType().equals(Input.class)) {
+//                    inputFieldList.add(field);
+//                }
+//            }
+//        }
+
+        for (int i = 0; i < basicNode.getParamLinkerList().size(); i++) {
+            ParamLinker paramLinker = basicNode.getParamLinkerList().get(i);
+            String paramLinkType = paramLinker.getType();
+            if (paramLinkType.equals("const")) {
+                // 静态, 直接根据目标格式
+            } else {
+                // 动态, 需要根据目标类型进行转换
+                String sourceTaskName = paramLinker.getSourceTaskName();
+                String flowId = basicNode.getFlowId();
+                Node sourceNode = nodeDao.getByName(flowId, basicNode.getNodeName());
+                List<NodeData> nodeDataList = sourceNode.getNodeDataList();
+
+                // 表达字段
+                Optional<NodeData> targetData = nodeDataList
+                        .stream()
+                        .filter(nodeData -> {
+                            return nodeData.getFieldName().equals(paramLinker.getSourceFieldName());
+                        }).findFirst();
+                if (!targetData.isPresent()) {
+                    logger.error("failed to find target data");
+                }
+
+                // 目标字段类型
+                Optional<Field> targetField = inputFieldList
+                        .stream()
+                        .filter(inputField -> inputField.getName().equals(paramLinker.getDestFieldName()))
+                        .findFirst();
+                if (!targetData.isPresent()) {
+                    logger.error("failed to find target field");
+                }
+
+                // 如果是数组, 支持吗?
+
+            }
+        }
+
+    }
+
+    public void buildClusterNode(Node basicNode) {
+
     }
 
     public void queryBasic(Node basicNode) {
