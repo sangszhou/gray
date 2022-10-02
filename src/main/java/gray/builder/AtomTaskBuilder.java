@@ -26,7 +26,6 @@ public class AtomTaskBuilder extends TaskBuilder {
     @Override
     public Node build() {
         thisNode.setType(NodeType.ATOM);
-        thisNode.setParamLinkerList(this.paramLinkerList);
 
         // 静态的属性提前注入
         for (ParamLinker paramLinker : this.paramLinkerList) {
@@ -46,6 +45,8 @@ public class AtomTaskBuilder extends TaskBuilder {
         paramLinker.setDestFieldName(destFieldName);
         // 简单类型是不是要特殊处理下? 因为简单类型无法进行 toJSONString
         paramLinker.setSourceValueType(destFieldValue.getClass().getSimpleName());
+        this.thisNode.getParamLinkerList().add(paramLinker);
+
         NodeData nodeData = ParamLinkUtils.buildStatic(destFieldName, destFieldValue);
         this.thisNode.getNodeDataList().add(nodeData);
         return this;
@@ -59,7 +60,7 @@ public class AtomTaskBuilder extends TaskBuilder {
         paramLinker.setSourceTaskName(taskName);
         paramLinker.setSourceFieldName(sourceFieldName);
         paramLinker.setDestFieldName(destFieldName);
-        this.paramLinkerList.add(paramLinker);
+        this.thisNode.getParamLinkerList().add(paramLinker);
         return this;
     }
 

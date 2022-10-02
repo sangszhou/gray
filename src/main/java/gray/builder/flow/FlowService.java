@@ -28,6 +28,7 @@ public class FlowService {
         String flowId = UUID.randomUUID().toString();
         flowInput.setFlowId(flowId);
         try {
+            // 怎么启动的, 需要先把状态置位 init 吗
             ComposerBuilder inst = composer.newInstance();
             fillFields(inst, flowInput);
             Node rootNode = inst.build(flowInput);
