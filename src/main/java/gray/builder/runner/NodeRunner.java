@@ -9,6 +9,7 @@ import gray.engine.NodeData;
 import gray.engine.NodeStatus;
 import gray.engine.ParamLinker;
 import gray.util.ClzUtils;
+import gray.util.ParamLinkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -175,24 +176,13 @@ public class NodeRunner {
         Class clz = ClzUtils.castTo(basicNode.getClzName());
         List<Field> fieldList = ClzUtils.getFieldsWithAnnotation(clz, Input.class);
 
-//        Field[] fieldList = clz.getFields();
-//        List<Field> inputFieldList = new LinkedList<>();
-//        // 查找所有的 input field 字段
-//        for (int i = 0; i < fieldList.length; i++) {
-//            Field field = fieldList[i];
-//            Annotation[] annotations = field.getAnnotations();
-//            for (int j = 0; j < annotations.length; j++) {
-//                if (annotations[j].annotationType().equals(Input.class)) {
-//                    inputFieldList.add(field);
-//                }
-//            }
-//        }
-
         for (int i = 0; i < basicNode.getParamLinkerList().size(); i++) {
             ParamLinker paramLinker = basicNode.getParamLinkerList().get(i);
-            String paramLinkType = paramLinker.getType();
-            if (paramLinkType.equals("const")) {
-                // 静态, 直接根据目标格式
+            int paramLinkType = paramLinker.getType();
+            if (paramLinkType == 0) {
+                // 静态 const 类型, 直接根据目标类型进行转换
+                NodeData staticNodeData = ParamLinkUtils.buildStatic(paramLinker.getDestFieldName(), );
+
             } else {
                 // 动态, 需要根据目标类型进行转换
                 String sourceTaskName = paramLinker.getSourceTaskName();
