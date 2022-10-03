@@ -43,7 +43,7 @@ public class FlowNodeRunner {
         return null;
     }
 
-    public StageResult queryNode(Node flowNode) {
+    public StageResult query(Node flowNode) {
         return null;
     }
 

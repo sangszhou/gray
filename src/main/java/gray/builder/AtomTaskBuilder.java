@@ -1,10 +1,8 @@
 package gray.builder;
 
 import gray.dag.Task;
-import gray.engine.Node;
-import gray.engine.NodeData;
-import gray.engine.NodeType;
-import gray.engine.ParamLinker;
+import gray.domain.FlowContext;
+import gray.engine.*;
 import gray.util.ParamLinkUtils;
 
 import java.util.LinkedList;
@@ -22,13 +20,23 @@ public class AtomTaskBuilder extends TaskBuilder {
         this.name = name;
     }
 
+    public AtomTaskBuilder(FlowContext flowContext, Class<? extends Task> clz, String name) {
+        this.setFlowContext(flowContext);
+        this.cls = clz;
+        this.name = name;
+    }
+
     @Override
     public Node build() {
+        // set flow id 是怎么配置的?
         thisNode.setType(NodeType.ATOM);
+        thisNode.setTaskClzName(this.cls.getName());
+        thisNode.setNodeName(this.name);
+        thisNode.setFlowId(getFlowContext().getFlowId());
 
         // 静态的属性提前注入
         for (ParamLinker paramLinker : this.paramLinkerList) {
-            if (paramLinker.getType() == 0) {
+            if (paramLinker.getParamLinkerType().equals(ParamLinkerType.STATIC)) {
                 NodeData staticField = ParamLinkUtils.buildStatic(paramLinker.getDestFieldName(),
                         paramLinker.getSourceValueData());
                 thisNode.getNodeDataList().add(staticField);
@@ -39,12 +47,12 @@ public class AtomTaskBuilder extends TaskBuilder {
 
     // 虽然是静态链接, 静态链接的 param link 还需要存储吗
     public TaskBuilder linkStatic(String destFieldName, Object destFieldValue) {
-        ParamLinker paramLinker = new ParamLinker();
-        paramLinker.setType(0);
-        paramLinker.setDestFieldName(destFieldName);
-        // 简单类型是不是要特殊处理下? 因为简单类型无法进行 toJSONString
-        paramLinker.setSourceValueType(destFieldValue.getClass().getSimpleName());
-        this.thisNode.getParamLinkerList().add(paramLinker);
+//        ParamLinker paramLinker = new ParamLinker();
+//        paramLinker.setParamLinkerType(ParamLinkerType.STATIC);
+//        paramLinker.setDestFieldName(destFieldName);
+//        // 简单类型是不是要特殊处理下? 因为简单类型无法进行 toJSONString
+//        paramLinker.setSourceValueType(destFieldValue.getClass().getSimpleName());
+//        this.thisNode.getParamLinkerList().add(paramLinker);
 
         NodeData nodeData = ParamLinkUtils.buildStatic(destFieldName, destFieldValue);
         this.thisNode.getNodeDataList().add(nodeData);
@@ -55,7 +63,7 @@ public class AtomTaskBuilder extends TaskBuilder {
     public TaskBuilder linkDynamic(String sourceTaskName, String sourceFieldName,
                                    String destFieldName) {
         ParamLinker paramLinker = new ParamLinker();
-        paramLinker.setType(1);
+        paramLinker.setParamLinkerType(ParamLinkerType.DYNAMIC);
         paramLinker.setSourceTaskName(sourceTaskName);
         paramLinker.setSourceFieldName(sourceFieldName);
         paramLinker.setDestFieldName(destFieldName);

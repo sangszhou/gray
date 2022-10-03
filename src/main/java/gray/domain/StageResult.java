@@ -21,4 +21,11 @@ public class StageResult {
         this.msg = msg;
     }
 
+    public static StageResult SuccessResult() {
+        StageResult result = new StageResult();
+        result.setCode(2);
+        result.setMsg("success");
+        return result;
+    }
+
 }

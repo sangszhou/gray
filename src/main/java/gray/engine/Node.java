@@ -1,8 +1,6 @@
 package gray.engine;
 
 
-import gray.dag.FlowAssembler;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -18,12 +16,12 @@ public class Node {
     String nodeName;
     String preId;
     String wrapperId;
-    // 0 -> parent 外层, 1 -> many, 2 -> block 类型
+    // 0 -> atomic?, 1 -> many, 2 -> block 类型, 3 -> flow?
     NodeType type;
     // 初始化为 invalid
     NodeStatus status = NodeStatus.INVALID;
-    List<ParamLinker> paramLinkerList;
-    List<NodeData> nodeDataList;
+    List<ParamLinker> paramLinkerList = new LinkedList<>();
+    List<NodeData> nodeDataList = new LinkedList<>();
 
     public List<NodeData> getNodeDataList() {
         return nodeDataList;

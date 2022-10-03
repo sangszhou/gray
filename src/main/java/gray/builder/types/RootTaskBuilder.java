@@ -2,6 +2,7 @@ package gray.builder.types;
 
 import gray.builder.ComposerBuilder;
 import gray.builder.TaskBuilder;
+import gray.domain.FlowContext;
 import gray.domain.FlowInput;
 import gray.engine.Node;
 import gray.engine.NodeStatus;
@@ -14,12 +15,19 @@ public class RootTaskBuilder extends TaskBuilder {
     List<Node> subNodeList = new LinkedList<>();
     Node thisNode = new Node();
 
-    public RootTaskBuilder() {
+//    public RootTaskBuilder() {
+//    }
+
+    public RootTaskBuilder(FlowContext flowContext) {
+        this.setFlowContext(flowContext);
     }
 
     @Override
     public Node build() {
         thisNode.setType(NodeType.ROOT);
+        thisNode.setFlowId(getFlowContext().getFlowId());
+        thisNode.setNodeName("ROOT");
+
         for (Node node : subNodeList) {
             node.setWrapperId(thisNode.getId());
             thisNode.getSubNodeList().add(node);
