@@ -104,32 +104,6 @@ public class NodeRunnerController {
         }
     }
 
-    public void queryWrapperNode(Node wrapNode) {
-        Node wrapperSelector = new Node();
-        wrapperSelector.setWrapperId(wrapNode.getId());
-        List<Node> wrappedNode = nodeDao.query(wrapperSelector);
-        if (wrappedNode.size() == 0) {
-            wrapNode.setStatus(NodeStatus.SUCCESS);
-            nodeDao.save(wrapNode);
-            return;
-        }
-        boolean hasFail = false;
-        for (Node node : wrappedNode) {
-            if (node.getStatus() != NodeStatus.FAIL && node.getStatus() != NodeStatus.SUCCESS) {
-                return;
-            }
-            if (node.getStatus().equals(NodeStatus.FAIL)) {
-                hasFail = true;
-            }
-        }
-        if (hasFail) {
-            wrapNode.setStatus(NodeStatus.FAIL);
-        } else {
-            wrapNode.setStatus(NodeStatus.SUCCESS);
-        }
-        nodeDao.save(wrapNode);
-    }
-
     public void buildAtomTaskNode(Node basicNode) {
         // 1. 获取所有 input 注解标注的
         // 2. 因为是存储过的, 所以 class 需要从 clzName 中获取,
