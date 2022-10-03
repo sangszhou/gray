@@ -20,8 +20,8 @@ public class Node {
     NodeType type;
     // 初始化为 invalid
     NodeStatus status = NodeStatus.INVALID;
-    List<ParamLinker> paramLinkerList;
-    List<NodeData> nodeDataList;
+    List<ParamLinker> paramLinkerList = new LinkedList<>();
+    List<NodeData> nodeDataList = new LinkedList<>();
 
     public List<NodeData> getNodeDataList() {
         return nodeDataList;

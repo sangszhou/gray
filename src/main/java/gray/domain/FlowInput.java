@@ -1,12 +1,13 @@
 package gray.domain;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class FlowInput {
     String appName;
     String operator;
     String flowId;
-    Map<String, Object> data;
+    Map<String, Object> data = new HashMap<>();
 
     public Map<String, Object> getData() {
         return data;

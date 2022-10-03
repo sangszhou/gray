@@ -17,7 +17,7 @@ public class ApolloGrayDeployComposer extends ComposerBuilder {
     String appName;
 
     @FlowParam
-    boolean env;
+    String env;
 
     @FlowParam
     int batchNum;
