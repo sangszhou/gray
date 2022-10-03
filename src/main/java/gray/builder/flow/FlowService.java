@@ -30,8 +30,7 @@ public class FlowService {
         flowInput.setFlowId(flowId);
         try {
             // 怎么启动的, 需要先把状态置位 init 吗
-            ComposerBuilder inst = composer.newInstance();
-            fillFields(inst, flowInput);
+            ComposerBuilder inst = initComposerBuilder(composer, flowInput);
             Node rootNode = inst.build(flowInput);
             traversal(rootNode, flowInput);
             return flowId;
@@ -40,11 +39,18 @@ public class FlowService {
         } catch (IllegalAccessException e) {
             logger.error("IllegalAccessException", e);
         }
+
         logger.error("failed to start flow");
         return null;
     }
 
-    public void fillFields(ComposerBuilder composerBuilder, FlowInput flowInput) throws IllegalAccessException {
+    private ComposerBuilder initComposerBuilder(Class<? extends ComposerBuilder> composer, FlowInput flowInput) throws IllegalAccessException, InstantiationException {
+        ComposerBuilder inst = composer.newInstance();
+        fillFields(inst, flowInput);
+        return inst;
+    }
+
+    private void fillFields(ComposerBuilder composerBuilder, FlowInput flowInput) throws IllegalAccessException {
         List<Field> fieldList = ClzUtils.getFieldsWithAnnotation(
                 composerBuilder.getClass(), FlowParam.class);
         logger.info("flow fill fields: [%s]", fieldList.stream()
@@ -56,7 +62,7 @@ public class FlowService {
             if (flowInput.getData().containsKey(field.getName())) {
                 field.set(composerBuilder, flowInput.getData().get(field.getName()));
             } else {
-                logger.error("fill fields failed, field has not data %s", field.getName());
+                logger.error("fill fields failed, field has not data: {}", field.getName());
             }
         }
     }

@@ -27,10 +27,8 @@ public class BasicNodeRunner {
     NodeService nodeService;
 
     public void trigger(Node basicNode) {
-        Class clz = basicNode.getClass();
-        Task taskInst = null;
         try {
-            taskInst = (Task) clz.newInstance();
+            Task taskInst = this.initTask(basicNode);
             // todo 所有 input 都要 set 进去. 这里还得区分 composerBuilder 和 taskBuilder
             StageResult stageResult = taskInst.execute();
             if (stageResult.getCode() == 2) {
@@ -42,30 +40,30 @@ public class BasicNodeRunner {
             }
             nodeService.save(basicNode);
         } catch (InstantiationException exp) {
-            logger.error("init task failed", exp);
+            logger.error("basic task, init task failed", exp);
         } catch (IllegalAccessException exp) {
-            logger.error("init task failed", exp);
+            logger.error("basic task, init task failed", exp);
         }
     }
 
     public void query(Node basicNode) {
-        Class clz = basicNode.getClass();
-        Task taskInst = null;
         try {
-            taskInst = (Task) clz.newInstance();
+            Task taskInst = initTask(basicNode);
             StageResult stageResult = taskInst.query();
             if (stageResult.getCode() == 2) {
                 basicNode.setStatus(NodeStatus.SUCCESS);
+                nodeService.save(basicNode);
             } else if (stageResult.getCode() == 3){
                 basicNode.setStatus(NodeStatus.FAIL);
+                nodeService.save(basicNode);
             } else {
                 // continue
                 logger.info("query basic node, running");
             }
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        } catch (InstantiationException exp) {
+            logger.error("basic task, init task failed", exp);
+        } catch (IllegalAccessException exp) {
+            logger.error("basic task, init task failed", exp);
         }
     }
 

@@ -104,55 +104,55 @@ public class NodeRunnerController {
         }
     }
 
-    public void buildAtomTaskNode(Node basicNode) {
-        // 1. 获取所有 input 注解标注的
-        // 2. 因为是存储过的, 所以 class 需要从 clzName 中获取,
-        // 这里为了简单起见, 不再从 clz name 中获取
-        // 3.
-//        String clzName = basicNode.getClzName();
-        Class clz = ClzUtils.castTo(basicNode.getTaskClzName());
-        List<Field> fieldList = ClzUtils.getFieldsWithAnnotation(clz, Input.class);
-
-        for (int i = 0; i < basicNode.getParamLinkerList().size(); i++) {
-            ParamLinker paramLinker = basicNode.getParamLinkerList().get(i);
-            ParamLinkerType paramLinkType = paramLinker.getParamLinkerType();
-            if (paramLinkType.equals(ParamLinkerType.STATIC)) {
-                // 静态 const 类型, 直接根据目标类型进行转换
-                NodeData staticNodeData = ParamLinkUtils.buildStatic(paramLinker.getDestFieldName(), );
-
-            } else {
-                // todo 还有一个 flow input 需要处理
-                // 动态, 需要根据目标类型进行转换
-                String sourceTaskName = paramLinker.getSourceTaskName();
-                String flowId = basicNode.getFlowId();
-                Node sourceNode = nodeDao.getByName(flowId, basicNode.getNodeName());
-                List<NodeData> nodeDataList = sourceNode.getNodeDataList();
-
-                // 表达字段
-                Optional<NodeData> targetData = nodeDataList
-                        .stream()
-                        .filter(nodeData -> {
-                            return nodeData.getFieldName().equals(paramLinker.getSourceFieldName());
-                        }).findFirst();
-                if (!targetData.isPresent()) {
-                    logger.error("failed to find target data");
-                }
-
-                // 目标字段类型
-                Optional<Field> targetField = inputFieldList
-                        .stream()
-                        .filter(inputField -> inputField.getName().equals(paramLinker.getDestFieldName()))
-                        .findFirst();
-                if (!targetData.isPresent()) {
-                    logger.error("failed to find target field");
-                }
-
-                // 如果是数组, 支持吗?
-
-            }
-        }
-
-    }
+//    public void buildAtomTaskNode(Node basicNode) {
+//        // 1. 获取所有 input 注解标注的
+//        // 2. 因为是存储过的, 所以 class 需要从 clzName 中获取,
+//        // 这里为了简单起见, 不再从 clz name 中获取
+//        // 3.
+////        String clzName = basicNode.getClzName();
+//        Class clz = ClzUtils.castTo(basicNode.getTaskClzName());
+//        List<Field> fieldList = ClzUtils.getFieldsWithAnnotation(clz, Input.class);
+//
+//        for (int i = 0; i < basicNode.getParamLinkerList().size(); i++) {
+//            ParamLinker paramLinker = basicNode.getParamLinkerList().get(i);
+//            ParamLinkerType paramLinkType = paramLinker.getParamLinkerType();
+//            if (paramLinkType.equals(ParamLinkerType.STATIC)) {
+//                // 静态 const 类型, 直接根据目标类型进行转换
+//                NodeData staticNodeData = ParamLinkUtils.buildStatic(paramLinker.getDestFieldName(), );
+//
+//            } else {
+//                // todo 还有一个 flow input 需要处理
+//                // 动态, 需要根据目标类型进行转换
+//                String sourceTaskName = paramLinker.getSourceTaskName();
+//                String flowId = basicNode.getFlowId();
+//                Node sourceNode = nodeDao.getByName(flowId, basicNode.getNodeName());
+//                List<NodeData> nodeDataList = sourceNode.getNodeDataList();
+//
+//                // 表达字段
+//                Optional<NodeData> targetData = nodeDataList
+//                        .stream()
+//                        .filter(nodeData -> {
+//                            return nodeData.getFieldName().equals(paramLinker.getSourceFieldName());
+//                        }).findFirst();
+//                if (!targetData.isPresent()) {
+//                    logger.error("failed to find target data");
+//                }
+//
+//                // 目标字段类型
+//                Optional<Field> targetField = inputFieldList
+//                        .stream()
+//                        .filter(inputField -> inputField.getName().equals(paramLinker.getDestFieldName()))
+//                        .findFirst();
+//                if (!targetData.isPresent()) {
+//                    logger.error("failed to find target field");
+//                }
+//
+//                // 如果是数组, 支持吗?
+//
+//            }
+//        }
+//
+//    }
 
     public void buildClusterNode(Node basicNode) {
 

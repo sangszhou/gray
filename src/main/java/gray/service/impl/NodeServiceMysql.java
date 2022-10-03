@@ -10,7 +10,6 @@ public class NodeServiceMysql implements NodeService {
 
     @Override
     public int save(Node node) {
-
         return 0;
     }
 
@@ -25,12 +24,7 @@ public class NodeServiceMysql implements NodeService {
     }
 
     @Override
-    public List<Node> queryNodes(NodeStatus nodeStatus) {
-        return null;
-    }
-
-    @Override
-    public List<Node> queryBySelector(Node node) {
+    public List<Node> query(Node node) {
         return null;
     }
 }
