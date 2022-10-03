@@ -1,16 +1,22 @@
 package gray.builder.flow;
 
+import gray.builder.ComposerBuilder;
 import gray.builder.NodeDao;
+import gray.builder.annotation.FlowParam;
 import gray.demo.SimpleComposer;
 import gray.domain.FlowInput;
 import gray.engine.Node;
+import gray.util.ClzUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.lang.reflect.Field;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class FlowService {
@@ -19,11 +25,14 @@ public class FlowService {
     @Autowired
     NodeDao nodeDao;
 
-    public String startFlow(Class<SimpleComposer> composer, FlowInput flowInput) {
+    public String startFlow(Class<? extends ComposerBuilder> composer, FlowInput flowInput) {
         String flowId = UUID.randomUUID().toString();
         flowInput.setFlowId(flowId);
         try {
-            Node rootNode = composer.newInstance().build(flowInput);
+            // 怎么启动的, 需要先把状态置位 init 吗
+            ComposerBuilder inst = composer.newInstance();
+            fillFields(inst, flowInput);
+            Node rootNode = inst.build(flowInput);
             traversal(rootNode, flowInput);
             return flowId;
         } catch (InstantiationException e) {
@@ -33,6 +42,23 @@ public class FlowService {
         }
         logger.error("failed to start flow");
         return null;
+    }
+
+    public void fillFields(ComposerBuilder composerBuilder, FlowInput flowInput) throws IllegalAccessException {
+        List<Field> fieldList = ClzUtils.getFieldsWithAnnotation(
+                composerBuilder.getClass(), FlowParam.class);
+        logger.info("flow fill fields: [%s]", fieldList.stream()
+                .map(it -> it.getName())
+                .reduce((a, b) -> a + "," + b));
+
+        for (Field field : fieldList) {
+            field.setAccessible(true);
+            if (flowInput.getData().containsKey(field.getName())) {
+                field.set(composerBuilder, flowInput.getData().get(field.getName()));
+            } else {
+                logger.error("fill fields failed, field has not data %s", field.getName());
+            }
+        }
     }
 
     public void traversal(Node node, FlowInput flowInput) {

@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  mysql57:
+    container_name: mysql57
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      #      MYSQL_DATABASE: db_name # 这个有啥用?
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_HOST: "%"
+    command: --lower_case_table_names=1

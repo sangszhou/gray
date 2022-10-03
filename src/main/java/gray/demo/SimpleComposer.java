@@ -4,11 +4,18 @@ import gray.builder.AtomTaskBuilder;
 import gray.builder.ComposerBuilder;
 import gray.builder.ParallelTaskBuilder;
 import gray.builder.SeqTaskBuilder;
+import gray.builder.annotation.FlowParam;
 import gray.builder.types.RootTaskBuilder;
 import gray.domain.FlowInput;
 
 
 public class SimpleComposer extends ComposerBuilder {
+
+    // flow param 直接从 flowInput 中抽取, 用起来比较方便
+    @FlowParam
+    String composerName;
+    @FlowParam
+    String operatorId;
 
     public RootTaskBuilder doBuild(FlowInput flowInput) {
         RootTaskBuilder root = new RootTaskBuilder();

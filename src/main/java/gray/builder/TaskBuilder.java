@@ -12,6 +12,14 @@ public abstract class TaskBuilder {
     public abstract Node build();
     public abstract TaskBuilder addTask(TaskBuilder taskBuilder);
 
+    public TaskBuilder linkStatic(String destName, Object destValue) {
+        throw new RuntimeException("not supported");
+    }
+
+    public TaskBuilder linkDynamic(String taskName, String sourceName,
+                                   String destName) {
+        throw new RuntimeException("not supported");
+    }
 
     public Class getCls() {
         return cls;

@@ -36,7 +36,13 @@ public class NodeDaoInMem implements NodeDao {
     }
 
     @Override
-    public List<Node> queryNodes(NodeStatus status) {
+    public Node getByName(String flowId, String taskName) {
+        // 根据 flow
+        return null;
+    }
+
+    @Override
+    public List<Node> queryByStatus(NodeStatus status) {
         List<Node> nodes = new LinkedList<>();
         for (Node node : nodeList) {
             if (node.getStatus().equals(status)) {
@@ -47,7 +53,7 @@ public class NodeDaoInMem implements NodeDao {
     }
 
     @Override
-    public List<Node> queryBySelector(Node nodeSelector) {
+    public List<Node> query(Node nodeSelector) {
         List<Node> nodes = new LinkedList<>();
         for (Node node : nodeList) {
             if (nodeSelector.getType() != null && !nodeSelector.getType().equals(node.getType())) {

@@ -51,7 +51,7 @@ class BatchDeploy2 {
                 hostBuilder.addTask(new AtomTaskBuilder(HostStartTask.class, "hostStart"));
                 for (int k = 0; k < stepNum; k++) {
                     AtomTaskBuilder stepTask = new AtomTaskBuilder(StepTask.class, "step");
-                    stepTask.linkConst("idx", k);
+                    stepTask.linkStatic("idx", k);
                     hostBuilder.addTask(stepTask);
                 }
                 hostBuilder.addTask(new AtomTaskBuilder(HostEndTask.class, "hostEnd"));

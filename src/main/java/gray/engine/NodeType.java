@@ -5,5 +5,5 @@ public enum NodeType {
     ATOM,
     MANY,
     BLOCK,
-
+    FLOW,
 }

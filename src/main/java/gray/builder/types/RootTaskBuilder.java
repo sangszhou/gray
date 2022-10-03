@@ -1,6 +1,8 @@
 package gray.builder.types;
 
+import gray.builder.ComposerBuilder;
 import gray.builder.TaskBuilder;
+import gray.domain.FlowInput;
 import gray.engine.Node;
 import gray.engine.NodeStatus;
 import gray.engine.NodeType;
@@ -33,6 +35,17 @@ public class RootTaskBuilder extends TaskBuilder {
             Node preNode = subNodeList.get(subNodeList.size() - 1);
             node.setPreId(preNode.getId());
         }
+        subNodeList.add(node);
+        return this;
+    }
+
+    public TaskBuilder addFlow(Class<? extends ComposerBuilder> flowClz, FlowInput flowInput) {
+        // todo flowInput 该怎么创建呢?
+        Node node = new Node();
+        node.setFlowClzName(flowClz.getSimpleName());
+        node.setType(NodeType.FLOW);
+        node.setStatus(NodeStatus.INVALID);
+
         subNodeList.add(node);
         return this;
     }

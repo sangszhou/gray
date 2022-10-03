@@ -7,11 +7,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+// 还是逻辑态的对象
 public class Node {
     // 所属的 flow id
     String flowId;
     String id = UUID.randomUUID().toString();
-    String clzName;
+    // node 既可以是一个 task 定义, 也可以是一个 flow 定义
+    String taskClzName;
+    String flowClzName;
     String nodeName;
     String preId;
     String wrapperId;
@@ -19,6 +22,24 @@ public class Node {
     NodeType type;
     // 初始化为 invalid
     NodeStatus status = NodeStatus.INVALID;
+    List<ParamLinker> paramLinkerList;
+    List<NodeData> nodeDataList;
+
+    public List<NodeData> getNodeDataList() {
+        return nodeDataList;
+    }
+
+    public void setNodeDataList(List<NodeData> nodeDataList) {
+        this.nodeDataList = nodeDataList;
+    }
+
+    public List<ParamLinker> getParamLinkerList() {
+        return paramLinkerList;
+    }
+
+    public void setParamLinkerList(List<ParamLinker> paramLinkerList) {
+        this.paramLinkerList = paramLinkerList;
+    }
 
     public String getFlowId() {
         return flowId;
@@ -62,12 +83,20 @@ public class Node {
         this.id = id;
     }
 
-    public String getClzName() {
-        return clzName;
+    public String getTaskClzName() {
+        return taskClzName;
     }
 
-    public void setClzName(String clzName) {
-        this.clzName = clzName;
+    public void setTaskClzName(String taskClzName) {
+        this.taskClzName = taskClzName;
+    }
+
+    public String getFlowClzName() {
+        return flowClzName;
+    }
+
+    public void setFlowClzName(String flowClzName) {
+        this.flowClzName = flowClzName;
     }
 
     public String getWrapperId() {
