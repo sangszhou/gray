@@ -2,12 +2,10 @@ package gray.builder.runner;
 
 import gray.builder.NodeDao;
 import gray.builder.annotation.Input;
+import gray.builder.flow.FlowService;
 import gray.dag.Task;
 import gray.domain.StageResult;
-import gray.engine.Node;
-import gray.engine.NodeData;
-import gray.engine.NodeStatus;
-import gray.engine.ParamLinker;
+import gray.engine.*;
 import gray.util.ClzUtils;
 import gray.util.ParamLinkUtils;
 import org.slf4j.Logger;
@@ -16,60 +14,73 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class NodeRunner {
+public class NodeRunnerController {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     NodeDao nodeDao;
+    @Autowired
+    FlowService flowService;
+    @Autowired
+    FlowNodeRunner flowNodeRunner;
+    @Autowired
+    BlockNodeRunner blockNodeRunner;
+    @Autowired
+    ManyNodeRunner manyNodeRunner;
+    @Autowired
+    RootNodeRunner rootNodeRunner;
+    @Autowired
+    BasicNodeRunner basicNodeRunner;
 
-    // rate 10 seconds
-    @Scheduled(fixedRate = 5*1000)
+    @Scheduled(fixedRate = 10*1000)
     public void trigger() {
-        logger.info("trigger cron job running");
-        List<Node> initNode = nodeDao.queryNodes(NodeStatus.INIT);
+        List<Node> initNode = nodeDao.queryByStatus(NodeStatus.INIT);
+        logger.info("trigger cron job running, init node number: {}", initNode.size());
         for (Node node : initNode) {
             switch (node.getType()) {
                 case MANY:
-                    TriggerMany(node);
+                    manyNodeRunner.trigger(node);
                 case ATOM:
-                    triggerBasic(node);
+                    basicNodeRunner.trigger(node);
                 case BLOCK:
-                    triggerBlock(node);
+                    blockNodeRunner.trigger(node);
                 case ROOT:
-                    triggerRoot(node);
+                    rootNodeRunner.trigger(node);
+                case FLOW:
+                    flowNodeRunner.triggerNode(node);
                 default:
-                    System.out.println("unsupported node type: " + node.getType());
+                    logger.error("unsupported node type: " + node.getType());
             }
         }
     }
 
-    @Scheduled(fixedRate = 5 * 1000)
+    @Scheduled(fixedRate = 10 * 1000)
     public void query() {
-        List<Node> runningNode = nodeDao.queryNodes(NodeStatus.QUERY);
+        List<Node> runningNode = nodeDao.queryByStatus(NodeStatus.QUERY);
         for (Node node : runningNode) {
             switch (node.getType()) {
                 case MANY:
-                    queryMany(node);
+                    manyNodeRunner.query(node);
                 case BLOCK:
-                    queryBlock(node);
+                    blockNodeRunner.query(node);
                 case ATOM:
-                    queryBasic(node);
+                    basicNodeRunner.query(node);
                 default:
-                    logger.error("unsupported query node");
+                    logger.error("unsupported query node: {}", node.getType());
             }
         }
     }
 
     @Scheduled(fixedRate = 5*1000)
     public void waitNode() {
-        List<Node> waitNodeList = nodeDao.queryNodes(NodeStatus.INVALID);
+        // 驱动节点前进
+        // 如果一个节点的前驱节点全部结束, 那么此节点结束
+        List<Node> waitNodeList = nodeDao.queryByStatus(NodeStatus.INVALID);
         for (Node node : waitNodeList) {
             String preId = node.getPreId();
             if (preId == null) {
@@ -93,18 +104,10 @@ public class NodeRunner {
         }
     }
 
-    public void triggerRoot(Node root) {
-           root.setStatus(NodeStatus.QUERY);
-    }
-
-    public void queryRoot(Node root) {
-
-    }
-
     public void queryWrapperNode(Node wrapNode) {
         Node wrapperSelector = new Node();
         wrapperSelector.setWrapperId(wrapNode.getId());
-        List<Node> wrappedNode = nodeDao.queryBySelector(wrapperSelector);
+        List<Node> wrappedNode = nodeDao.query(wrapperSelector);
         if (wrappedNode.size() == 0) {
             wrapNode.setStatus(NodeStatus.SUCCESS);
             nodeDao.save(wrapNode);
@@ -127,63 +130,24 @@ public class NodeRunner {
         nodeDao.save(wrapNode);
     }
 
-
-    public void triggerBlock(Node blockNode) {
-        blockNode.setStatus(NodeStatus.QUERY);
-    }
-
-    public void queryBlock(Node blockNode) {
-        queryWrapperNode(blockNode);
-    }
-
-    public void TriggerMany(Node manyNode) {
-        manyNode.setStatus(NodeStatus.QUERY);
-    }
-
-    public void queryMany(Node manyNode) {
-        queryWrapperNode(manyNode);
-    }
-
-
-    public void triggerBasic(Node basicNode) {
-        Class clz = basicNode.getClass();
-        Task taskInst = null;
-        try {
-            taskInst = (Task) clz.newInstance();
-            // todo 所有 input 都要 set 进去. 这里还得区分 composerBuilder 和 taskBuilder
-            StageResult stageResult = taskInst.execute();
-            if (stageResult.getCode() == 2) {
-                // success, 进入到 query 阶段
-                basicNode.setStatus(NodeStatus.QUERY);
-            } else {
-                // fail
-                basicNode.setStatus(NodeStatus.FAIL);
-            }
-            nodeDao.save(basicNode);
-        } catch (InstantiationException exp) {
-            logger.error("init task failed", exp);
-        } catch (IllegalAccessException exp) {
-            logger.error("init task failed", exp);
-        }
-    }
-
     public void buildAtomTaskNode(Node basicNode) {
         // 1. 获取所有 input 注解标注的
         // 2. 因为是存储过的, 所以 class 需要从 clzName 中获取,
         // 这里为了简单起见, 不再从 clz name 中获取
         // 3.
 //        String clzName = basicNode.getClzName();
-        Class clz = ClzUtils.castTo(basicNode.getClzName());
+        Class clz = ClzUtils.castTo(basicNode.getTaskClzName());
         List<Field> fieldList = ClzUtils.getFieldsWithAnnotation(clz, Input.class);
 
         for (int i = 0; i < basicNode.getParamLinkerList().size(); i++) {
             ParamLinker paramLinker = basicNode.getParamLinkerList().get(i);
-            int paramLinkType = paramLinker.getType();
-            if (paramLinkType == 0) {
+            ParamLinkerType paramLinkType = paramLinker.getParamLinkerType();
+            if (paramLinkType.equals(ParamLinkerType.STATIC)) {
                 // 静态 const 类型, 直接根据目标类型进行转换
                 NodeData staticNodeData = ParamLinkUtils.buildStatic(paramLinker.getDestFieldName(), );
 
             } else {
+                // todo 还有一个 flow input 需要处理
                 // 动态, 需要根据目标类型进行转换
                 String sourceTaskName = paramLinker.getSourceTaskName();
                 String flowId = basicNode.getFlowId();
@@ -219,27 +183,5 @@ public class NodeRunner {
     public void buildClusterNode(Node basicNode) {
 
     }
-
-    public void queryBasic(Node basicNode) {
-        Class clz = basicNode.getClass();
-        Task taskInst = null;
-        try {
-            taskInst = (Task) clz.newInstance();
-            StageResult stageResult = taskInst.query();
-            if (stageResult.getCode() == 2) {
-                basicNode.setStatus(NodeStatus.SUCCESS);
-            } else if (stageResult.getCode() == 3){
-                basicNode.setStatus(NodeStatus.FAIL);
-            } else {
-                // continue
-                logger.info("query basic node, running");
-            }
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
 
 }

@@ -1,6 +1,5 @@
 package gray.builder;
 
-import com.alibaba.fastjson.JSON;
 import gray.dag.Task;
 import gray.engine.Node;
 import gray.engine.NodeData;
@@ -39,7 +38,7 @@ public class AtomTaskBuilder extends TaskBuilder {
     }
 
     // 虽然是静态链接, 静态链接的 param link 还需要存储吗
-    public TaskBuilder linkConst(String destFieldName, Object destFieldValue) {
+    public TaskBuilder linkStatic(String destFieldName, Object destFieldValue) {
         ParamLinker paramLinker = new ParamLinker();
         paramLinker.setType(0);
         paramLinker.setDestFieldName(destFieldName);
@@ -53,11 +52,11 @@ public class AtomTaskBuilder extends TaskBuilder {
     }
 
     // connect 两个任务的开始和结束字段
-    public TaskBuilder linkDynamic(String taskName, String sourceFieldName,
+    public TaskBuilder linkDynamic(String sourceTaskName, String sourceFieldName,
                                    String destFieldName) {
         ParamLinker paramLinker = new ParamLinker();
         paramLinker.setType(1);
-        paramLinker.setSourceTaskName(taskName);
+        paramLinker.setSourceTaskName(sourceTaskName);
         paramLinker.setSourceFieldName(sourceFieldName);
         paramLinker.setDestFieldName(destFieldName);
         this.thisNode.getParamLinkerList().add(paramLinker);

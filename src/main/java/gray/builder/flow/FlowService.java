@@ -16,6 +16,7 @@ import org.springframework.util.CollectionUtils;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class FlowService {
@@ -24,7 +25,7 @@ public class FlowService {
     @Autowired
     NodeDao nodeDao;
 
-    public String startFlow(Class<SimpleComposer> composer, FlowInput flowInput) {
+    public String startFlow(Class<? extends ComposerBuilder> composer, FlowInput flowInput) {
         String flowId = UUID.randomUUID().toString();
         flowInput.setFlowId(flowId);
         try {
@@ -46,14 +47,16 @@ public class FlowService {
     public void fillFields(ComposerBuilder composerBuilder, FlowInput flowInput) throws IllegalAccessException {
         List<Field> fieldList = ClzUtils.getFieldsWithAnnotation(
                 composerBuilder.getClass(), FlowParam.class);
+        logger.info("flow fill fields: [%s]", fieldList.stream()
+                .map(it -> it.getName())
+                .reduce((a, b) -> a + "," + b));
 
         for (Field field : fieldList) {
             field.setAccessible(true);
             if (flowInput.getData().containsKey(field.getName())) {
                 field.set(composerBuilder, flowInput.getData().get(field.getName()));
             } else {
-                logger.error("fill fields failed, field has not data %s",
-                        field.getName());
+                logger.error("fill fields failed, field has not data %s", field.getName());
             }
         }
     }

@@ -39,9 +39,13 @@ public class RootTaskBuilder extends TaskBuilder {
         return this;
     }
 
-    public TaskBuilder addFlow(ComposerBuilder composerBuilder, FlowInput flowInput) {
+    public TaskBuilder addFlow(Class<? extends ComposerBuilder> flowClz, FlowInput flowInput) {
         // todo flowInput 该怎么创建呢?
-        Node node = composerBuilder.build(flowInput);
+        Node node = new Node();
+        node.setFlowClzName(flowClz.getSimpleName());
+        node.setType(NodeType.FLOW);
+        node.setStatus(NodeStatus.INVALID);
+
         subNodeList.add(node);
         return this;
     }

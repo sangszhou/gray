@@ -12,7 +12,7 @@ public abstract class TaskBuilder {
     public abstract Node build();
     public abstract TaskBuilder addTask(TaskBuilder taskBuilder);
 
-    public TaskBuilder linkConst(String destName, Object destValue) {
+    public TaskBuilder linkStatic(String destName, Object destValue) {
         throw new RuntimeException("not supported");
     }
 

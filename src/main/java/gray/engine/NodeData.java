@@ -7,14 +7,14 @@ public class NodeData {
     // task 字段名
     String fieldName;
     // input = 0, output = 1, input 会提前填充完毕
-    int type;
+    ParamLinkerType paramLinkerType;
 
-    public int getType() {
-        return type;
+    public ParamLinkerType getParamLinkerType() {
+        return paramLinkerType;
     }
 
-    public void setType(int type) {
-        this.type = type;
+    public void setParamLinkerType(ParamLinkerType paramLinkerType) {
+        this.paramLinkerType = paramLinkerType;
     }
 
     public String getClassName() {
