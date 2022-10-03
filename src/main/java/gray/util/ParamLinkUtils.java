@@ -10,11 +10,12 @@ public class ParamLinkUtils {
         nodeData.setNodeDataType(NodeDataType.INPUT);
         nodeData.setFieldName(destFieldName);
         nodeData.setClassName(data.toString());
-        if (isSimpleType(data)) {
-            nodeData.setContent(data.toString());
-        } else {
-            nodeData.setContent(JSON.toJSONString(data));
-        }
+        nodeData.setContent(JSON.toJSONString(data));
+//        if (isSimpleType(data)) {
+//            nodeData.setContent(data.toString());
+//        } else {
+//            nodeData.setContent(JSON.toJSONString(data));
+//        }
         return nodeData;
     }
 

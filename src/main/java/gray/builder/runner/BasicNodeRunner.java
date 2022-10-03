@@ -74,16 +74,18 @@ public class BasicNodeRunner {
         for (int i = 0; i < fieldList.size(); i++) {
             Field theField = fieldList.get(i);
             theField.setAccessible(true);
-            for (int j = 0; j < basicNode.getNodeDataList().size(); j++) {
+            boolean foundMatch = false;
+            for (int j = 0; j < basicNode.getNodeDataList().size() && !foundMatch; j++) {
                 // 静态传值
                 NodeData nodeData = basicNode.getNodeDataList().get(j);
                 if (nodeData.getFieldName().equals(theField.getName())) {
                     Object dataWithType = JSON.parseObject(nodeData.getContent(), theField.getType());
                     theField.set(taskInst, dataWithType);
-                    break;
+                    foundMatch = true;
                 }
             }
-            for (int j = 0; j < basicNode.getParamLinkerList().size(); j++) {
+
+            for (int j = 0; j < basicNode.getParamLinkerList().size() && !foundMatch; j++) {
                 // 动态传值, 需要从前序节点中抽取值, 需要前序节点的状态为完成
                 ParamLinker paramLinker = basicNode.getParamLinkerList().get(j);
                 if (paramLinker.getDestFieldName().equals(theField.getName())) {
@@ -97,12 +99,15 @@ public class BasicNodeRunner {
                         // todo 可能有父类子类的问题, 是否应该以 source task 的类型为准呢?
                         Object dataWithType = JSON.parseObject(theNodeData.get().getContent(), theField.getType());
                         theField.set(taskInst, dataWithType);
+                        foundMatch = true;
                     }
-                    break;
                 }
             }
-            // 如果执行到这里, 说明没有发现 match
-            logger.error("failed to find data for arg {}", theField.getName());
+
+            if (!foundMatch) {
+                // 如果执行到这里, 说明没有发现 match
+                logger.error("failed to find data for arg [{}]", theField.getName());
+            }
         }
         return taskInst;
     }

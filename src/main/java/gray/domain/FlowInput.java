@@ -6,7 +6,7 @@ import java.util.Map;
 public class FlowInput {
     String appName;
     String operator;
-    String flowId;
+//    String flowId;
     Map<String, Object> data = new HashMap<>();
 
     public Map<String, Object> getData() {
@@ -33,11 +33,11 @@ public class FlowInput {
         this.appName = appName;
     }
 
-    public String getFlowId() {
-        return flowId;
-    }
-
-    public void setFlowId(String flowId) {
-        this.flowId = flowId;
-    }
+//    public String getFlowId() {
+//        return flowId;
+//    }
+//
+//    public void setFlowId(String flowId) {
+//        this.flowId = flowId;
+//    }
 }

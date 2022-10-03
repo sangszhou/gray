@@ -71,7 +71,7 @@ public class NodeRunnerController {
     @Scheduled(fixedRate = 10 * 1000)
     public void query() {
         Node queryParam = new Node();
-        queryParam.setStatus(NodeStatus.INIT);
+        queryParam.setStatus(NodeStatus.QUERY);
 
         List<Node> runningNode = nodeService.query(queryParam);
         for (Node node : runningNode) {
@@ -82,6 +82,10 @@ public class NodeRunnerController {
                     blockNodeRunner.query(node);
                 case ATOM:
                     basicNodeRunner.query(node);
+                case ROOT:
+                    rootNodeRunner.query(node);
+                case FLOW:
+                    flowNodeRunner.query(node);
                 default:
                     logger.error("unsupported query node: {}", node.getType());
             }

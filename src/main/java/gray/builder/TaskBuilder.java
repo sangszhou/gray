@@ -1,5 +1,6 @@
 package gray.builder;
 
+import gray.domain.FlowContext;
 import gray.engine.Node;
 
 public abstract class TaskBuilder {
@@ -7,7 +8,7 @@ public abstract class TaskBuilder {
     String name;
     String preId;
     String wrapperId;
-
+    FlowContext flowContext;
 
     public abstract Node build();
     public abstract TaskBuilder addTask(TaskBuilder taskBuilder);
@@ -19,6 +20,14 @@ public abstract class TaskBuilder {
     public TaskBuilder linkDynamic(String taskName, String sourceName,
                                    String destName) {
         throw new RuntimeException("not supported");
+    }
+
+    public FlowContext getFlowContext() {
+        return flowContext;
+    }
+
+    public void setFlowContext(FlowContext flowContext) {
+        this.flowContext = flowContext;
     }
 
     public Class getCls() {

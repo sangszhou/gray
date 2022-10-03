@@ -24,14 +24,14 @@ public class FlowService {
     NodeService nodeService;
 
     public String startFlow(Class<? extends ComposerBuilder> composer, FlowInput flowInput) {
-        String flowId = UUID.randomUUID().toString();
-        flowInput.setFlowId(flowId);
+//        String flowId = UUID.randomUUID().toString();
+//        flowInput.setFlowId(flowId);
         try {
             // 怎么启动的, 需要先把状态置位 init 吗
             ComposerBuilder inst = initComposerBuilder(composer, flowInput);
             Node rootNode = inst.build(flowInput);
             persistNode(rootNode, flowInput);
-            return flowId;
+            return rootNode.getFlowId();
         } catch (InstantiationException e) {
             logger.error("InstantiationException", e);
         } catch (IllegalAccessException e) {
@@ -67,7 +67,7 @@ public class FlowService {
 
     public void persistNode(Node node, FlowInput flowInput) {
         // 设置所属的 flow id
-        node.setFlowId(flowInput.getFlowId());
+//        node.setFlowId(flowInput.getFlowId());
         if (CollectionUtils.isEmpty(node.getSubNodeList())) {
             nodeService.save(node);
             return;
