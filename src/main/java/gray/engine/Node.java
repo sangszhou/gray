@@ -16,7 +16,7 @@ public class Node {
     String nodeName;
     String preId;
     String wrapperId;
-    // 0 -> parent 外层, 1 -> many, 2 -> block 类型
+    // 0 -> atomic?, 1 -> many, 2 -> block 类型, 3 -> flow?
     NodeType type;
     // 初始化为 invalid
     NodeStatus status = NodeStatus.INVALID;
