@@ -12,9 +12,10 @@ import java.util.List;
 public class SeqTaskBuilder extends TaskBuilder {
     Node sequenceNode = new Node();
     List<Node> subNodeList = new LinkedList<>();
-
+    FlowContext flowContext;
     public SeqTaskBuilder(FlowContext flowContext) {
         sequenceNode.setType(NodeType.SEQUENCE);
+        this.flowContext = flowContext;
     }
 
     @Override

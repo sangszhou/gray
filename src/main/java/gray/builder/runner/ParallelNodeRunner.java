@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ManyNodeRunner {
+public class ParallelNodeRunner {
     @Autowired
     NodeDao nodeDao;
 

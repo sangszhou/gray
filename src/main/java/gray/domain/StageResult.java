@@ -21,6 +21,13 @@ public class StageResult {
         this.msg = msg;
     }
 
+    public static StageResult RunningResult() {
+        StageResult result = new StageResult();
+        result.setCode(1);
+        result.setMsg("fail");
+        return result;
+    }
+
     public static StageResult SuccessResult() {
         StageResult result = new StageResult();
         result.setCode(2);
@@ -34,5 +41,7 @@ public class StageResult {
         result.setMsg("fail");
         return result;
     }
+
+
 
 }

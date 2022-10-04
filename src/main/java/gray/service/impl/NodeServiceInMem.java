@@ -2,6 +2,8 @@ package gray.service.impl;
 
 import gray.engine.Node;
 import gray.service.NodeService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -9,6 +11,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class NodeServiceInMem implements NodeService {
+    Logger logger = LoggerFactory.getLogger(getClass());
 
     Map<String, Node> nodeMap = new HashMap<>();
 
@@ -31,6 +34,14 @@ public class NodeServiceInMem implements NodeService {
         Optional<Node> theNode = nodeMap
                 .values()
                 .stream()
+                .map(it -> {
+                    if (it.getFlowId() == null) {
+                        logger.info("get by name, flow id is null: [{}]", it.getNodeName());
+                    } else if (it.getNodeName() == null) {
+                        logger.info("get by name, node name is null: [{}]", it.getType());
+                    }
+                    return it;
+                })
                 .filter(it -> it.getFlowId().equals(flowId) && it.getNodeName().equals(taskName))
                 .findFirst();
         if (theNode.isPresent()) {

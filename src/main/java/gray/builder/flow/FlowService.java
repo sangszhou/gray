@@ -52,7 +52,21 @@ public class FlowService {
         queryParam.setType(NodeType.ROOT);
         queryParam.setFlowId(flowId);
         Node rootNode = nodeService.getByName(flowId, "ROOT");
+        if (rootNode == null) {
+            logger.warn("flow status, flow id: {} is null", flowId);
+            return null;
+        }
+
         return rootNode.getStatus();
+    }
+
+    public List<Node> queryByParentFlowId(String parentFlowId) {
+        Node queryParam = new Node();
+        queryParam.setType(NodeType.ROOT);
+        queryParam.setParentFlowId(parentFlowId);
+
+        List<Node> subFlowList = nodeService.query(queryParam);
+        return subFlowList;
     }
 
     private void fillFields(FlowBuilder composerBuilder, FlowInput flowInput) throws IllegalAccessException {

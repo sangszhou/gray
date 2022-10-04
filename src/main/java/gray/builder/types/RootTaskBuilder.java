@@ -50,9 +50,11 @@ public class RootTaskBuilder extends TaskBuilder {
 
     public TaskBuilder addFlow(Class<? extends FlowBuilder> flowClz, FlowInput flowInput) {
         // todo flowInput 该怎么创建呢?
+        // todo 这里不能直接 build, 需要延迟到后期吗? 还是可以直接 build 的? 是实时 build 还是延迟 build, 这是个问题
         Node node = new Node();
         node.setFlowClzName(flowClz.getName());
         node.setType(NodeType.FLOW);
+        node.setNodeName(Constants.INNER_NODE_NAME_FLOW);
         node.setStatus(NodeStatus.INVALID);
         FlowContext flowContext = this.getFlowContext();
         node.setFlowId(flowContext.getFlowId());

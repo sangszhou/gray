@@ -24,7 +24,7 @@ public class NodeRunnerController {
     @Autowired
     BlockNodeRunner blockNodeRunner;
     @Autowired
-    ManyNodeRunner manyNodeRunner;
+    ParallelNodeRunner manyNodeRunner;
     @Autowired
     RootNodeRunner rootNodeRunner;
     @Autowired

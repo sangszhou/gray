@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -62,14 +63,27 @@ public class FlowNodeRunner {
 
     public StageResult query(Node flowNode) {
         logger.info("flow node runner querying...");
-        NodeStatus nodeStatus = flowService.flowStatus(flowNode.getFlowId());
-        if (nodeStatus.equals(NodeStatus.SUCCESS)) {
+        List<Node> subFlowList = flowService.queryByParentFlowId(flowNode.getFlowId());
+        if (subFlowList.size() == 0) {
             return StageResult.SuccessResult();
-        } else if (nodeStatus.equals(NodeStatus.FAIL)) {
-            return StageResult.FailResult();
         }
-        // running 的就不再更新了
-        return null;
+
+        for (Node subFlowNode : subFlowList) {
+            if (subFlowNode.getStatus().equals(NodeStatus.FAIL)) {
+                // 有失败的, 最终为失败
+                flowNode.setStatus(NodeStatus.FAIL);
+                nodeService.save(flowNode);
+                return StageResult.FailResult();
+            }
+            if (!subFlowNode.getStatus().equals(NodeStatus.SUCCESS)) {
+                return StageResult.RunningResult();
+            }
+        }
+
+        // 全部都是 success
+        flowNode.setStatus(NodeStatus.SUCCESS);
+        nodeService.save(flowNode);
+        return StageResult.SuccessResult();
     }
 
 }

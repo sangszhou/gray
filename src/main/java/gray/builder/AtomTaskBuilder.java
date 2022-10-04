@@ -9,16 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class AtomTaskBuilder extends TaskBuilder {
-    Node thisNode = new Node();
+    Node atomNode = new Node();
     List<ParamLinker> paramLinkerList = new LinkedList<>();
-
-    public AtomTaskBuilder() {
-    }
-
-    public AtomTaskBuilder(Class<? extends Task> clz, String name) {
-        this.cls = clz;
-        this.name = name;
-    }
 
     public AtomTaskBuilder(FlowContext flowContext, Class<? extends Task> clz, String name) {
         this.setFlowContext(flowContext);
@@ -29,20 +21,20 @@ public class AtomTaskBuilder extends TaskBuilder {
     @Override
     public Node build() {
         // set flow id 是怎么配置的?
-        thisNode.setType(NodeType.ATOM);
-        thisNode.setTaskClzName(this.cls.getName());
-        thisNode.setNodeName(this.name);
-        thisNode.setFlowId(getFlowContext().getFlowId());
+        atomNode.setType(NodeType.ATOM);
+        atomNode.setTaskClzName(this.cls.getName());
+        atomNode.setNodeName(this.name);
+        atomNode.setFlowId(getFlowContext().getFlowId());
 
         // 静态的属性提前注入
         for (ParamLinker paramLinker : this.paramLinkerList) {
             if (paramLinker.getParamLinkerType().equals(ParamLinkerType.STATIC)) {
                 NodeData staticField = ParamLinkUtils.buildStatic(paramLinker.getDestFieldName(),
                         paramLinker.getSourceValueData());
-                thisNode.getNodeDataList().add(staticField);
+                atomNode.getNodeDataList().add(staticField);
             }
         }
-        return thisNode;
+        return atomNode;
     }
 
     // 虽然是静态链接, 静态链接的 param link 还需要存储吗
@@ -55,7 +47,7 @@ public class AtomTaskBuilder extends TaskBuilder {
 //        this.thisNode.getParamLinkerList().add(paramLinker);
 
         NodeData nodeData = ParamLinkUtils.buildStatic(destFieldName, destFieldValue);
-        this.thisNode.getNodeDataList().add(nodeData);
+        this.atomNode.getNodeDataList().add(nodeData);
         return this;
     }
 
@@ -67,7 +59,7 @@ public class AtomTaskBuilder extends TaskBuilder {
         paramLinker.setSourceTaskName(sourceTaskName);
         paramLinker.setSourceFieldName(sourceFieldName);
         paramLinker.setDestFieldName(destFieldName);
-        this.thisNode.getParamLinkerList().add(paramLinker);
+        this.atomNode.getParamLinkerList().add(paramLinker);
         return this;
     }
 
