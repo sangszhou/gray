@@ -1,30 +1,36 @@
 package gray.builder;
 
+import gray.domain.Constants;
+import gray.domain.FlowContext;
 import gray.engine.Node;
+import gray.engine.NodeStatus;
 import gray.engine.NodeType;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public class SeqTaskBuilder extends TaskBuilder {
-    Node blockNode = new Node();
+    Node sequenceNode = new Node();
     List<Node> subNodeList = new LinkedList<>();
 
-    public SeqTaskBuilder() {
-        blockNode.setType(NodeType.SEQUENCE);
+    public SeqTaskBuilder(FlowContext flowContext) {
+        sequenceNode.setType(NodeType.SEQUENCE);
     }
 
     @Override
     public Node build() {
+        sequenceNode.setFlowId(this.flowContext.getFlowId());
+        sequenceNode.setStatus(NodeStatus.INVALID);
+        sequenceNode.setNodeName(Constants.INNER_NODE_NAME_SEQUENCE);
         for (Node node : subNodeList) {
-            blockNode.getSubNodeList().add(node);
+            sequenceNode.getSubNodeList().add(node);
         }
-        return blockNode;
+        return sequenceNode;
     }
 
     public TaskBuilder addTask(TaskBuilder taskBuilder) {
         Node node = taskBuilder.build();
-        node.setWrapperId(blockNode.getId());
+        node.setWrapperId(sequenceNode.getId());
 
         if (subNodeList.size() > 0) {
             Node preNode = subNodeList.get(subNodeList.size() - 1);

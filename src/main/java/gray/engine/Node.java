@@ -7,11 +7,12 @@ import java.util.UUID;
 
 // 还是逻辑态的对象
 public class Node {
+    String id = UUID.randomUUID().toString();
     // 所属的 flow id
     String flowId;
     // 如果是子流程, 会有 parent flow id
     String parentFlowId;
-    String id = UUID.randomUUID().toString();
+
     // node 既可以是一个 task 定义, 也可以是一个 flow 定义
     String taskClzName;
     String flowClzName;

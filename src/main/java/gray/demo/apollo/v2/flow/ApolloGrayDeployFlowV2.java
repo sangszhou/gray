@@ -1,7 +1,6 @@
 package gray.demo.apollo.v2.flow;
 
-import gray.builder.AtomTaskBuilder;
-import gray.builder.ComposerBuilder;
+import gray.builder.FlowBuilder;
 import gray.builder.annotation.FlowParam;
 import gray.builder.types.RootTaskBuilder;
 import gray.domain.FlowContext;
@@ -9,21 +8,17 @@ import gray.domain.FlowInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.UUID;
 
-public class ApolloGrayDeployComposerV2  extends ComposerBuilder {
+public class ApolloGrayDeployFlowV2 extends FlowBuilder {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     // 简单类型也得声明
     @FlowParam
     String appName;
-
     @FlowParam
     String env;
-
     @FlowParam
     int batchNum;
-
     @FlowParam
     boolean pauseBetweenBatch;
 
@@ -37,7 +32,7 @@ public class ApolloGrayDeployComposerV2  extends ComposerBuilder {
 
         RootTaskBuilder root = new RootTaskBuilder(flowContext);
 
-        for (int i = 0; i < batchNum; i++) {
+        for (int i = 0; i < batchNum; i ++) {
             // 这里是不是要 deep copy 一下原始的 flowInput data?
             FlowInput subFlowInput = flowInput.deepCopy();
             subFlowInput.getData().put("currentBatchNum", i);

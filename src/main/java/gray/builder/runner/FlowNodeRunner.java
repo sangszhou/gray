@@ -1,7 +1,7 @@
 package gray.builder.runner;
 
 import com.alibaba.fastjson.JSON;
-import gray.builder.ComposerBuilder;
+import gray.builder.FlowBuilder;
 import gray.builder.flow.FlowService;
 import gray.domain.FlowInput;
 import gray.domain.StageResult;
@@ -46,7 +46,7 @@ public class FlowNodeRunner {
 
         // 直接触发子 flow 的执行, 和触发逻辑是一样的
         // flow service 要怎么初始化呢?
-        Class<? extends ComposerBuilder> flowClz = ClzUtils.castTo(flowClzName);
+        Class<? extends FlowBuilder> flowClz = ClzUtils.castTo(flowClzName);
         String subFlowId = flowService.startFlow(flowClz, subFlowInput);
 
         // 父亲节点不需要记录孩子节点的信息

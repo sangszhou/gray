@@ -1,7 +1,7 @@
 package gray.builder.types;
 
 import com.alibaba.fastjson.JSON;
-import gray.builder.ComposerBuilder;
+import gray.builder.FlowBuilder;
 import gray.builder.TaskBuilder;
 import gray.domain.Constants;
 import gray.domain.FlowContext;
@@ -15,24 +15,25 @@ public class RootTaskBuilder extends TaskBuilder {
     List<Node> subNodeList = new LinkedList<>();
     Node thisNode = new Node();
 
-//    public RootTaskBuilder() {
-//    }
-
     public RootTaskBuilder(FlowContext flowContext) {
         this.setFlowContext(flowContext);
     }
 
     @Override
     public Node build() {
+        // todo. 如果是子 flow, 那么 node 节点不能是 INIT, 应该还是 invalid
+        // 不对, 及时是子 flow, node 也是 init 不是 invalid
+        // todo. context 是否可以在 build 里传递, 这样就不需要让用户填充 flowContext 参数了
         thisNode.setType(NodeType.ROOT);
         thisNode.setFlowId(getFlowContext().getFlowId());
-        thisNode.setNodeName("ROOT");
+        thisNode.setNodeName(Constants.INNER_NODE_NAME_ROOT);
+        thisNode.setStatus(NodeStatus.INIT);
 
         for (Node node : subNodeList) {
             node.setWrapperId(thisNode.getId());
             thisNode.getSubNodeList().add(node);
         }
-        thisNode.setStatus(NodeStatus.INIT);
+
         return thisNode;
     }
 
@@ -47,7 +48,7 @@ public class RootTaskBuilder extends TaskBuilder {
         return this;
     }
 
-    public TaskBuilder addFlow(Class<? extends ComposerBuilder> flowClz, FlowInput flowInput) {
+    public TaskBuilder addFlow(Class<? extends FlowBuilder> flowClz, FlowInput flowInput) {
         // todo flowInput 该怎么创建呢?
         Node node = new Node();
         node.setFlowClzName(flowClz.getName());

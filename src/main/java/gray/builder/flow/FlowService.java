@@ -1,6 +1,6 @@
 package gray.builder.flow;
 
-import gray.builder.ComposerBuilder;
+import gray.builder.FlowBuilder;
 import gray.builder.annotation.FlowParam;
 import gray.domain.Constants;
 import gray.domain.FlowInput;
@@ -13,11 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class FlowService {
@@ -26,10 +24,10 @@ public class FlowService {
     @Autowired
     NodeService nodeService;
 
-    public String startFlow(Class<? extends ComposerBuilder> composer, FlowInput flowInput) {
+    public String startFlow(Class<? extends FlowBuilder> composer, FlowInput flowInput) {
         try {
             // 怎么启动的, 需要先把状态置位 init 吗
-            ComposerBuilder inst = initComposerBuilder(composer, flowInput);
+            FlowBuilder inst = initComposerBuilder(composer, flowInput);
             Node rootNode = inst.build(flowInput);
             persistNode(rootNode, flowInput);
             return rootNode.getFlowId();
@@ -43,8 +41,8 @@ public class FlowService {
         return null;
     }
 
-    private ComposerBuilder initComposerBuilder(Class<? extends ComposerBuilder> composer, FlowInput flowInput) throws IllegalAccessException, InstantiationException {
-        ComposerBuilder inst = composer.newInstance();
+    private FlowBuilder initComposerBuilder(Class<? extends FlowBuilder> composer, FlowInput flowInput) throws IllegalAccessException, InstantiationException {
+        FlowBuilder inst = composer.newInstance();
         fillFields(inst, flowInput);
         return inst;
     }
@@ -57,7 +55,7 @@ public class FlowService {
         return rootNode.getStatus();
     }
 
-    private void fillFields(ComposerBuilder composerBuilder, FlowInput flowInput) throws IllegalAccessException {
+    private void fillFields(FlowBuilder composerBuilder, FlowInput flowInput) throws IllegalAccessException {
         List<Field> fieldList = ClzUtils.getFieldsWithAnnotation(
                 composerBuilder.getClass(), FlowParam.class);
         logger.info("flow fill fields: [{}]", fieldList.stream()
@@ -81,10 +79,11 @@ public class FlowService {
                     .get(Constants.INNER_PARENT_FLOW_ID).toString());
         }
 
-        if (CollectionUtils.isEmpty(node.getSubNodeList())) {
-            nodeService.save(node);
-            return;
-        }
+        // fast path, 但似乎没必要, 反而可能会引入 bug
+//        if (CollectionUtils.isEmpty(node.getSubNodeList())) {
+//            nodeService.save(node);
+//            return;
+//        }
 
         for (Node subNode : node.getSubNodeList()) {
             persistNode(subNode, flowInput);

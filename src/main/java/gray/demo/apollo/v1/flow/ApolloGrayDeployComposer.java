@@ -1,7 +1,7 @@
 package gray.demo.apollo.v1.flow;
 
 import gray.builder.AtomTaskBuilder;
-import gray.builder.ComposerBuilder;
+import gray.builder.FlowBuilder;
 import gray.builder.annotation.FlowParam;
 import gray.builder.types.RootTaskBuilder;
 import gray.demo.apollo.v1.task.ApolloBatchDeployTask;
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
-public class ApolloGrayDeployComposer extends ComposerBuilder {
+public class ApolloGrayDeployComposer extends FlowBuilder {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     // 简单类型也得声明
