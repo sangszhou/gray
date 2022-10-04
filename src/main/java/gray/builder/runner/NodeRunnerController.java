@@ -78,14 +78,19 @@ public class NodeRunnerController {
             switch (node.getType()) {
                 case MANY:
                     manyNodeRunner.query(node);
+                    break;
                 case BLOCK:
                     blockNodeRunner.query(node);
+                    break;
                 case ATOM:
                     basicNodeRunner.query(node);
+                    break;
                 case ROOT:
                     rootNodeRunner.query(node);
+                    break;
                 case FLOW:
                     flowNodeRunner.query(node);
+                    break;
                 default:
                     logger.error("unsupported query node: {}", node.getType());
             }
