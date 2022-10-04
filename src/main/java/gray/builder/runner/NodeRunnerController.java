@@ -1,23 +1,15 @@
 package gray.builder.runner;
 
-import gray.builder.NodeDao;
-import gray.builder.annotation.Input;
 import gray.builder.flow.FlowService;
-import gray.dag.Task;
-import gray.domain.StageResult;
 import gray.engine.*;
 import gray.service.NodeService;
-import gray.util.ClzUtils;
-import gray.util.ParamLinkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class NodeRunnerController {
@@ -47,13 +39,13 @@ public class NodeRunnerController {
         logger.info("trigger cron job running, init node number: {}", initNode.size());
         for (Node node : initNode) {
             switch (node.getType()) {
-                case MANY:
+                case PARALLEL:
                     manyNodeRunner.trigger(node);
                     break;
                 case ATOM:
                     basicNodeRunner.trigger(node);
                     break;
-                case BLOCK:
+                case SEQUENCE:
                     blockNodeRunner.trigger(node);
                     break;
                 case ROOT:
@@ -76,10 +68,10 @@ public class NodeRunnerController {
         List<Node> runningNode = nodeService.query(queryParam);
         for (Node node : runningNode) {
             switch (node.getType()) {
-                case MANY:
+                case PARALLEL:
                     manyNodeRunner.query(node);
                     break;
-                case BLOCK:
+                case SEQUENCE:
                     blockNodeRunner.query(node);
                     break;
                 case ATOM:

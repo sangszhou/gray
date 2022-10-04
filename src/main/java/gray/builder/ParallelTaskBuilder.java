@@ -11,7 +11,7 @@ public class ParallelTaskBuilder extends TaskBuilder {
     List<Node> subNodeList = new LinkedList<>();
 
     public ParallelTaskBuilder() {
-        manyNode.setType(NodeType.MANY);
+        manyNode.setType(NodeType.PARALLEL);
     }
 
     @Override

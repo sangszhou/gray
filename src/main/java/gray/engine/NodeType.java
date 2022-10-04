@@ -3,7 +3,7 @@ package gray.engine;
 public enum NodeType {
     ROOT,
     ATOM,
-    MANY,
-    BLOCK,
+    PARALLEL,
+    SEQUENCE,
     FLOW,
 }

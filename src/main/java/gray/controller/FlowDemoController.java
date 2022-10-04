@@ -3,6 +3,7 @@ package gray.controller;
 import gray.demo.SimpleComposer;
 import gray.builder.flow.FlowService;
 import gray.demo.apollo.v1.flow.ApolloGrayDeployComposer;
+import gray.demo.apollo.v2.flow.ApolloGrayBatchComposer;
 import gray.domain.ApolloDeployReq;
 import gray.domain.FlowInput;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,4 +38,22 @@ public class FlowDemoController {
         String flowId = flowService.startFlow(ApolloGrayDeployComposer.class, flowInput);
         return flowId;
     }
+
+    // 这是 batch 发布, 一个发布的子过程
+    @PostMapping("/v2/batch/apollo")
+    public String apolloBatchFlowV2(@RequestBody ApolloDeployReq req) {
+        FlowInput flowInput = new FlowInput();
+        flowInput.setAppName(req.getAppName());
+        flowInput.setOperator(req.getOperator());
+        flowInput.getData().put("appName", req.getAppName());
+        flowInput.getData().put("env", req.getEnv());
+        flowInput.getData().put("batchNum", req.getBatchNum());
+        // currentBatchNum 是从 0 开始的, 测试接口, 这里直接写死
+        flowInput.getData().put("currentBatchNum", 1);
+        flowInput.getData().put("pauseBetweenBatch", req.isPauseBetweenBatch());
+
+        String flowId = flowService.startFlow(ApolloGrayBatchComposer.class, flowInput);
+        return flowId;
+    }
+
 }

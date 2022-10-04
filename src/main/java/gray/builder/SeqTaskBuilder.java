@@ -11,7 +11,7 @@ public class SeqTaskBuilder extends TaskBuilder {
     List<Node> subNodeList = new LinkedList<>();
 
     public SeqTaskBuilder() {
-        blockNode.setType(NodeType.BLOCK);
+        blockNode.setType(NodeType.SEQUENCE);
     }
 
     @Override
