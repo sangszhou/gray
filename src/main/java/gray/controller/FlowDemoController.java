@@ -2,7 +2,7 @@ package gray.controller;
 
 import gray.demo.SimpleComposer;
 import gray.builder.flow.FlowService;
-import gray.demo.apollo.v1.ApolloGrayDeployComposer;
+import gray.demo.apollo.v1.flow.ApolloGrayDeployComposer;
 import gray.domain.ApolloDeployReq;
 import gray.domain.FlowInput;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class FlowDemoController {
         return flowId;
     }
 
-    @PostMapping("/deploy/apollo")
+    @PostMapping("/v1/deploy/apollo")
     public String apolloDeployFlow(@RequestBody ApolloDeployReq req) {
         FlowInput flowInput = new FlowInput();
         // 填充必要参数
