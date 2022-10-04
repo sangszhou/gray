@@ -9,6 +9,8 @@ import java.util.UUID;
 public class Node {
     // 所属的 flow id
     String flowId;
+    // 如果是子流程, 会有 parent flow id
+    String parentFlowId;
     String id = UUID.randomUUID().toString();
     // node 既可以是一个 task 定义, 也可以是一个 flow 定义
     String taskClzName;
@@ -22,6 +24,14 @@ public class Node {
     NodeStatus status = NodeStatus.INVALID;
     List<ParamLinker> paramLinkerList = new LinkedList<>();
     List<NodeData> nodeDataList = new LinkedList<>();
+
+    public String getParentFlowId() {
+        return parentFlowId;
+    }
+
+    public void setParentFlowId(String parentFlowId) {
+        this.parentFlowId = parentFlowId;
+    }
 
     public List<NodeData> getNodeDataList() {
         return nodeDataList;

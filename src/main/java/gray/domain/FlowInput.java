@@ -1,5 +1,7 @@
 package gray.domain;
 
+import com.alibaba.fastjson.JSON;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,11 +35,9 @@ public class FlowInput {
         this.appName = appName;
     }
 
-//    public String getFlowId() {
-//        return flowId;
-//    }
-//
-//    public void setFlowId(String flowId) {
-//        this.flowId = flowId;
-//    }
+    public FlowInput deepCopy() {
+        String inStr = JSON.toJSONString(this);
+        return JSON.parseObject(inStr, FlowInput.class);
+    }
+
 }

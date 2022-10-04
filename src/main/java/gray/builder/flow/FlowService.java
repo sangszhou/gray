@@ -2,8 +2,11 @@ package gray.builder.flow;
 
 import gray.builder.ComposerBuilder;
 import gray.builder.annotation.FlowParam;
+import gray.domain.Constants;
 import gray.domain.FlowInput;
 import gray.engine.Node;
+import gray.engine.NodeStatus;
+import gray.engine.NodeType;
 import gray.service.NodeService;
 import gray.util.ClzUtils;
 import org.slf4j.Logger;
@@ -24,8 +27,6 @@ public class FlowService {
     NodeService nodeService;
 
     public String startFlow(Class<? extends ComposerBuilder> composer, FlowInput flowInput) {
-//        String flowId = UUID.randomUUID().toString();
-//        flowInput.setFlowId(flowId);
         try {
             // 怎么启动的, 需要先把状态置位 init 吗
             ComposerBuilder inst = initComposerBuilder(composer, flowInput);
@@ -48,6 +49,14 @@ public class FlowService {
         return inst;
     }
 
+    public NodeStatus flowStatus(String flowId) {
+        Node queryParam = new Node();
+        queryParam.setType(NodeType.ROOT);
+        queryParam.setFlowId(flowId);
+        Node rootNode = nodeService.getByName(flowId, "ROOT");
+        return rootNode.getStatus();
+    }
+
     private void fillFields(ComposerBuilder composerBuilder, FlowInput flowInput) throws IllegalAccessException {
         List<Field> fieldList = ClzUtils.getFieldsWithAnnotation(
                 composerBuilder.getClass(), FlowParam.class);
@@ -66,8 +75,12 @@ public class FlowService {
     }
 
     public void persistNode(Node node, FlowInput flowInput) {
-        // 设置所属的 flow id
-//        node.setFlowId(flowInput.getFlowId());
+        // 设置父子关联
+        if (flowInput.getData().containsKey(Constants.INNER_PARENT_FLOW_ID)) {
+            node.setParentFlowId(flowInput.getData()
+                    .get(Constants.INNER_PARENT_FLOW_ID).toString());
+        }
+
         if (CollectionUtils.isEmpty(node.getSubNodeList())) {
             nodeService.save(node);
             return;

@@ -1,7 +1,9 @@
 package gray.domain;
 
+import java.util.UUID;
+
 public class FlowContext {
-    String flowId;
+    String flowId = UUID.randomUUID().toString();
     FlowInput flowInput;
 
     public String getFlowId() {

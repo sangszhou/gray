@@ -4,6 +4,7 @@ import gray.demo.SimpleComposer;
 import gray.builder.flow.FlowService;
 import gray.demo.apollo.v1.flow.ApolloGrayDeployComposer;
 import gray.demo.apollo.v2.flow.ApolloGrayBatchComposer;
+import gray.demo.apollo.v2.flow.ApolloGrayDeployComposerV2;
 import gray.domain.ApolloDeployReq;
 import gray.domain.FlowInput;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,20 @@ public class FlowDemoController {
         flowInput.getData().put("pauseBetweenBatch", req.isPauseBetweenBatch());
 
         String flowId = flowService.startFlow(ApolloGrayBatchComposer.class, flowInput);
+        return flowId;
+    }
+
+    @PostMapping("/v2/gray/deploy/apollo")
+    public String apolloGrayFlowV2(@RequestBody ApolloDeployReq req) {
+        FlowInput flowInput = new FlowInput();
+        flowInput.setAppName(req.getAppName());
+        flowInput.setOperator(req.getOperator());
+        flowInput.getData().put("appName", req.getAppName());
+        flowInput.getData().put("env", req.getEnv());
+        flowInput.getData().put("batchNum", req.getBatchNum());
+        flowInput.getData().put("pauseBetweenBatch", req.isPauseBetweenBatch());
+
+        String flowId = flowService.startFlow(ApolloGrayDeployComposerV2.class, flowInput);
         return flowId;
     }
 

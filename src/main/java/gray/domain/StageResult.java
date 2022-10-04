@@ -28,4 +28,11 @@ public class StageResult {
         return result;
     }
 
+    public static StageResult FailResult() {
+        StageResult result = new StageResult();
+        result.setCode(3);
+        result.setMsg("fail");
+        return result;
+    }
+
 }
