@@ -60,6 +60,10 @@ public class FlowService {
         return rootNode.getStatus();
     }
 
+    public void queryFlowResult(String flowId) {
+        logger.info("query flow result");
+    }
+
     public List<Node> queryByParentFlowId(String parentFlowId) {
         Node queryParam = new Node();
         queryParam.setType(NodeType.ROOT);

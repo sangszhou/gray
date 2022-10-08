@@ -5,7 +5,9 @@ import gray.builder.flow.FlowService;
 import gray.demo.apollo.v1.flow.ApolloGrayDeployComposer;
 import gray.demo.apollo.v2.flow.ApolloGrayBatchComposer;
 import gray.demo.apollo.v2.flow.ApolloGrayDeployFlowV2;
+import gray.demo.expansion.v1.flow.AppExpansionFlowV1;
 import gray.domain.ApolloDeployReq;
+import gray.domain.AppExpansionReq;
 import gray.domain.FlowInput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -69,6 +71,19 @@ public class FlowDemoController {
         flowInput.getData().put("pauseBetweenBatch", req.isPauseBetweenBatch());
 
         String flowId = flowService.startFlow(ApolloGrayDeployFlowV2.class, flowInput);
+        return flowId;
+    }
+
+    @PostMapping("/v1/app/expansion")
+    public String appExpansionV1(@RequestBody AppExpansionReq req) {
+        FlowInput flowInput = new FlowInput();
+        flowInput.setAppName(req.getAppName());
+        flowInput.setOperator(req.getOperator());
+
+        flowInput.getData().put("targetNum", req.getTargetNum());
+        flowInput.getData().put("nodeSpec", req.getNodeSpec());
+
+        String flowId = flowService.startFlow(AppExpansionFlowV1.class, flowInput);
         return flowId;
     }
 
