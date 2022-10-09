@@ -27,6 +27,7 @@ public class AtomTaskBuilder extends TaskBuilder {
         atomNode.setFlowId(getFlowContext().getFlowId());
 
         // 静态的属性提前注入
+        // 静态属性现在归到 nodeData 里存储了
         for (ParamLinker paramLinker : this.paramLinkerList) {
             if (paramLinker.getParamLinkerType().equals(ParamLinkerType.STATIC)) {
                 NodeData staticField = ParamLinkUtils.buildStatic(paramLinker.getDestFieldName(),

@@ -80,6 +80,8 @@ public class FlowDemoController {
         flowInput.setAppName(req.getAppName());
         flowInput.setOperator(req.getOperator());
 
+        flowInput.getData().put("appName", req.getAppName());
+        flowInput.getData().put("env", req.getEnv());
         flowInput.getData().put("targetNum", req.getTargetNum());
         flowInput.getData().put("nodeSpec", req.getNodeSpec());
 

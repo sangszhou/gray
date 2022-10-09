@@ -2,6 +2,7 @@ package gray.builder.runner;
 
 import com.alibaba.fastjson.JSON;
 import gray.builder.annotation.Input;
+import gray.builder.annotation.Output;
 import gray.dag.Task;
 import gray.domain.StageResult;
 import gray.engine.*;
@@ -28,11 +29,13 @@ public class BasicNodeRunner {
             Task taskInst = this.initTask(basicNode);
             // todo 所有 input 都要 set 进去. 这里还得区分 composerBuilder 和 taskBuilder
             StageResult stageResult = taskInst.execute();
+            this.saveOutput(basicNode, taskInst);
+
             if (stageResult.getCode() == 2) {
                 // success, 进入到 query 阶段
                 basicNode.setStatus(NodeStatus.QUERY);
             } else {
-                // fail
+                // todo fail 应该怎么处理呢?
                 basicNode.setStatus(NodeStatus.FAIL);
             }
             nodeService.save(basicNode);
@@ -47,6 +50,7 @@ public class BasicNodeRunner {
         try {
             Task taskInst = initTask(basicNode);
             StageResult stageResult = taskInst.query();
+            this.saveOutput(basicNode, taskInst);
             if (stageResult.getCode() == 2) {
                 basicNode.setStatus(NodeStatus.SUCCESS);
                 nodeService.save(basicNode);
@@ -64,30 +68,64 @@ public class BasicNodeRunner {
         }
     }
 
+    // todo autowire spring 的东西也要引进来
     public Task initTask(Node basicNode) throws InstantiationException, IllegalAccessException {
         Class<? extends Task> clz = ClzUtils.castTo(basicNode.getTaskClzName());
         Task taskInst = clz.newInstance();
-        List<Field> fieldList = ClzUtils.getFieldsWithAnnotation(clz, Input.class);
-        for (int i = 0; i < fieldList.size(); i++) {
-            Field theField = fieldList.get(i);
+        initInputFields(basicNode, taskInst);
+        initOutputFields(basicNode, taskInst);
+        return taskInst;
+    }
+
+    // execute 和 query 之后, 把 output 结果记录到 node 节点中, 供下次 task 初始化时使用 or 别的节点引用
+    private void saveOutput(Node basicNode, Task taskInst) throws IllegalAccessException {
+        List<Field> outputFieldList = ClzUtils.getFieldsWithAnnotation(taskInst.getClass(), Output.class);
+        for (Field theField: outputFieldList) {
+            theField.setAccessible(true);
+            Object fieldValue = theField.get(taskInst);
+            String fieldName = theField.getName();
+
+            Optional<NodeData> existingNodeData = basicNode.getNodeDataList().stream()
+                    .filter(it -> it.getNodeDataType().equals(NodeDataType.OUTPUT))
+                    .filter(it -> it.getFieldName().equals(fieldName))
+                    .findFirst();
+            if (existingNodeData.isPresent()) {
+                existingNodeData.get().setContent(JSON.toJSONString(fieldValue));
+            } else {
+                NodeData nodeData = new NodeData();
+                nodeData.setNodeDataType(NodeDataType.OUTPUT);
+                nodeData.setFieldName(fieldName);
+                nodeData.setClassName(fieldValue.getClass().getName());
+                nodeData.setContent(JSON.toJSONString(fieldValue));
+                basicNode.getNodeDataList().add(nodeData);
+            }
+        }
+    }
+
+    private void initInputFields(Node basicNode, Task taskInst) throws InstantiationException, IllegalAccessException {
+        List<Field> fieldList = ClzUtils.getFieldsWithAnnotation(taskInst.getClass(), Input.class);
+        for (Field theField: fieldList) {
             theField.setAccessible(true);
             boolean foundMatch = false;
-            for (int j = 0; j < basicNode.getNodeDataList().size() && !foundMatch; j++) {
+            for (NodeData nodeData: basicNode.getNodeDataList()) {
                 // 静态传值
-                NodeData nodeData = basicNode.getNodeDataList().get(j);
                 if (nodeData.getFieldName().equals(theField.getName())) {
                     Object dataWithType = JSON.parseObject(nodeData.getContent(), theField.getType());
                     theField.set(taskInst, dataWithType);
                     foundMatch = true;
+                    break;
                 }
             }
 
-            for (int j = 0; j < basicNode.getParamLinkerList().size() && !foundMatch; j++) {
+            for (ParamLinker paramLinker: basicNode.getParamLinkerList()) {
                 // 动态传值, 需要从前序节点中抽取值, 需要前序节点的状态为完成
-                ParamLinker paramLinker = basicNode.getParamLinkerList().get(j);
                 if (paramLinker.getDestFieldName().equals(theField.getName())) {
                     String sourceTaskName = paramLinker.getSourceTaskName();
                     Node linkedNode = nodeService.getByName(basicNode.getFlowId(), sourceTaskName);
+                    if (linkedNode == null) {
+                        logger.error("failed to found node by flow id: [{}], task name: [{}]",
+                                basicNode.getFlowId(), sourceTaskName);
+                    }
                     Optional<NodeData> theNodeData = linkedNode.getNodeDataList().stream()
                             .filter(it -> it.getNodeDataType().equals(NodeDataType.OUTPUT))
                             .filter(it -> it.getFieldName().equals(paramLinker.getSourceFieldName()))
@@ -97,6 +135,7 @@ public class BasicNodeRunner {
                         Object dataWithType = JSON.parseObject(theNodeData.get().getContent(), theField.getType());
                         theField.set(taskInst, dataWithType);
                         foundMatch = true;
+                        break;
                     }
                 }
             }
@@ -106,7 +145,26 @@ public class BasicNodeRunner {
                 logger.error("failed to find data for arg [{}]", theField.getName());
             }
         }
-        return taskInst;
     }
+
+    private void initOutputFields(Node basicNode, Task taskInst) throws IllegalAccessException {
+        // output 的值, 只会在 nodeDataList 中
+        List<Field> fieldList = ClzUtils.getFieldsWithAnnotation(taskInst.getClass(), Output.class);
+        for (Field theField: fieldList) {
+            theField.setAccessible(true);
+
+            Optional<NodeData> existingNodeData = basicNode.getNodeDataList().stream()
+                    .filter(it -> it.getFieldName().equals(theField.getName()))
+                    .filter(it -> it.getNodeDataType().equals(NodeDataType.OUTPUT))
+                    .findFirst();
+
+            if (existingNodeData.isPresent()) {
+                Object dataWithType = JSON.parseObject(existingNodeData.get().getContent(), theField.getType());
+                theField.set(taskInst, dataWithType);
+            }
+            // 如果没找到 output 值, 也是正常的.
+        }
+    }
+
 
 }
