@@ -78,6 +78,7 @@ public class BasicNodeRunner {
     }
 
     // execute 和 query 之后, 把 output 结果记录到 node 节点中, 供下次 task 初始化时使用 or 别的节点引用
+    // 如果 output 是 null, 也得处理覆盖已有的节点
     private void saveOutput(Node basicNode, Task taskInst) throws IllegalAccessException {
         List<Field> outputFieldList = ClzUtils.getFieldsWithAnnotation(taskInst.getClass(), Output.class);
         for (Field theField: outputFieldList) {
