@@ -34,27 +34,4 @@ public class NodeDaoMysql implements NodeDao{
         return null;
     }
 
-    private Node convert1(NodePo nodePo) {
-        String nodeType = nodePo.getNodeType();
-        String nodeStatus = nodePo.getNodeStatus();
-        String nodeDataListStr = nodePo.getNodeDataList();
-        String paramLinkListStr = nodePo.getParamLinkList();
-
-        String jsonStr = JSON.toJSONString(nodePo);
-        Node node = JSON.parseObject(jsonStr, Node.class);
-        node.setNodeStatus(NodeStatus.valueOf(nodeStatus));
-        node.setNodeType(NodeType.valueOf(nodeType));
-        // todo 有内部状态的, 怎么处理呢?
-        node.setParamLinkerList(JSON.parseObject(paramLinkListStr,
-                List.class));
-        node.setOutputDataList(JSON.parseObject(nodeDataListStr,
-                List.class));
-
-        return node;
-    }
-
-//    private NodePo convert2(Node node) {
-//
-//    }
-
 }
