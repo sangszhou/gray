@@ -1,6 +1,5 @@
 package gray.builder.runner;
 
-import gray.domain.StageResult;
 import gray.engine.Node;
 import gray.engine.NodeStatus;
 import gray.service.NodeService;
@@ -19,7 +18,7 @@ public class RootNodeRunner {
     NodeService nodeService;
 
     public void trigger(Node rootNode) {
-        rootNode.setStatus(NodeStatus.QUERY);
+        rootNode.setNodeStatus(NodeStatus.QUERY);
     }
 
     // root 是最外层的节点
@@ -32,25 +31,25 @@ public class RootNodeRunner {
 
         List<Node> wrappedNode = nodeService.query(queryParamNode);
         if (wrappedNode.size() == 0) {
-            wrapNode.setStatus(NodeStatus.SUCCESS);
+            wrapNode.setNodeStatus(NodeStatus.SUCCESS);
             nodeService.save(wrapNode);
             return;
         }
 
         boolean hasFail = false;
         for (Node node : wrappedNode) {
-            if (node.getStatus() != NodeStatus.FAIL && node.getStatus() != NodeStatus.SUCCESS) {
+            if (node.getNodeStatus() != NodeStatus.FAIL && node.getNodeStatus() != NodeStatus.SUCCESS) {
                 return;
             }
-            if (node.getStatus().equals(NodeStatus.FAIL)) {
+            if (node.getNodeStatus().equals(NodeStatus.FAIL)) {
                 hasFail = true;
             }
         }
 
         if (hasFail) {
-            wrapNode.setStatus(NodeStatus.FAIL);
+            wrapNode.setNodeStatus(NodeStatus.FAIL);
         } else {
-            wrapNode.setStatus(NodeStatus.SUCCESS);
+            wrapNode.setNodeStatus(NodeStatus.SUCCESS);
         }
 
         nodeService.save(wrapNode);

@@ -38,7 +38,7 @@ public class NodeServiceInMem implements NodeService {
                     if (it.getFlowId() == null) {
                         logger.info("get by name, flow id is null: [{}]", it.getNodeName());
                     } else if (it.getNodeName() == null) {
-                        logger.info("get by name, node name is null: [{}]", it.getType());
+                        logger.info("get by name, node name is null: [{}]", it.getNodeType());
                     }
                     return it;
                 })
@@ -59,10 +59,10 @@ public class NodeServiceInMem implements NodeService {
                     if (node.getNodeName() != null && !node.getNodeName().equals(it.getNodeName())) {
                         return false;
                     }
-                    if (node.getStatus() != null && !node.getStatus().equals(it.getStatus())) {
+                    if (node.getNodeStatus() != null && !node.getNodeStatus().equals(it.getNodeStatus())) {
                         return false;
                     }
-                    if (node.getType() != null && !node.getType().equals(it.getType())) {
+                    if (node.getNodeType() != null && !node.getNodeType().equals(it.getNodeType())) {
                         return false;
                     }
                     return true;

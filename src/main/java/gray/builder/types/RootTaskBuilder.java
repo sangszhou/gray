@@ -24,10 +24,10 @@ public class RootTaskBuilder extends TaskBuilder {
         // todo. 如果是子 flow, 那么 node 节点不能是 INIT, 应该还是 invalid
         // 不对, 及时是子 flow, node 也是 init 不是 invalid
         // todo. context 是否可以在 build 里传递, 这样就不需要让用户填充 flowContext 参数了
-        thisNode.setType(NodeType.ROOT);
+        thisNode.setNodeType(NodeType.ROOT);
         thisNode.setFlowId(getFlowContext().getFlowId());
         thisNode.setNodeName(Constants.INNER_NODE_NAME_ROOT);
-        thisNode.setStatus(NodeStatus.INIT);
+        thisNode.setNodeStatus(NodeStatus.INIT);
 
         for (Node node : subNodeList) {
             node.setWrapperId(thisNode.getId());
@@ -53,9 +53,9 @@ public class RootTaskBuilder extends TaskBuilder {
         // todo 这里不能直接 build, 需要延迟到后期吗? 还是可以直接 build 的? 是实时 build 还是延迟 build, 这是个问题
         Node node = new Node();
         node.setFlowClzName(flowClz.getName());
-        node.setType(NodeType.FLOW);
+        node.setNodeType(NodeType.FLOW);
         node.setNodeName(Constants.INNER_NODE_NAME_FLOW);
-        node.setStatus(NodeStatus.INVALID);
+        node.setNodeStatus(NodeStatus.INVALID);
         FlowContext flowContext = this.getFlowContext();
         node.setFlowId(flowContext.getFlowId());
 

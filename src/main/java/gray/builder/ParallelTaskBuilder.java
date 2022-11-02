@@ -15,14 +15,14 @@ public class ParallelTaskBuilder extends TaskBuilder {
     FlowContext flowContext;
 
     public ParallelTaskBuilder(FlowContext flowContext) {
-        parallelNode.setType(NodeType.PARALLEL);
+        parallelNode.setNodeType(NodeType.PARALLEL);
         this.flowContext = flowContext;
     }
 
     @Override
     public Node build() {
         parallelNode.setFlowId(this.flowContext.getFlowId());
-        parallelNode.setStatus(NodeStatus.INVALID);
+        parallelNode.setNodeStatus(NodeStatus.INVALID);
         parallelNode.setNodeName(Constants.INNER_NODE_NAME_PARALLEL);
         for (Node node : subNodeList) {
             parallelNode.getSubNodeList().add(node);

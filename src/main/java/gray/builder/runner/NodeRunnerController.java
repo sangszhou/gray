@@ -33,12 +33,12 @@ public class NodeRunnerController {
     @Scheduled(fixedRate = 10*1000)
     public void trigger() {
         Node queryParam = new Node();
-        queryParam.setStatus(NodeStatus.INIT);
+        queryParam.setNodeStatus(NodeStatus.INIT);
 
         List<Node> initNode = nodeService.query(queryParam);
         logger.info("trigger cron job running, init node number: {}", initNode.size());
         for (Node node : initNode) {
-            switch (node.getType()) {
+            switch (node.getNodeType()) {
                 case PARALLEL:
                     manyNodeRunner.trigger(node);
                     break;
@@ -55,7 +55,7 @@ public class NodeRunnerController {
                     flowNodeRunner.triggerNode(node);
                     break;
                 default:
-                    logger.error("unsupported node type: " + node.getType());
+                    logger.error("unsupported node type: " + node.getNodeType());
             }
         }
     }
@@ -63,11 +63,11 @@ public class NodeRunnerController {
     @Scheduled(fixedRate = 10 * 1000)
     public void query() {
         Node queryParam = new Node();
-        queryParam.setStatus(NodeStatus.QUERY);
+        queryParam.setNodeStatus(NodeStatus.QUERY);
 
         List<Node> runningNode = nodeService.query(queryParam);
         for (Node node : runningNode) {
-            switch (node.getType()) {
+            switch (node.getNodeType()) {
                 case PARALLEL:
                     manyNodeRunner.query(node);
                     break;
@@ -84,7 +84,7 @@ public class NodeRunnerController {
                     flowNodeRunner.query(node);
                     break;
                 default:
-                    logger.error("unsupported query node: {}", node.getType());
+                    logger.error("unsupported query node: {}", node.getNodeType());
             }
         }
     }
@@ -93,15 +93,15 @@ public class NodeRunnerController {
     public void wrapperExecuting() {
         // wrapper 节点执行结束后, wrapper 内的函数可以开始执行
         Node queryParam = new Node();
-        queryParam.setStatus(NodeStatus.INVALID);
+        queryParam.setNodeStatus(NodeStatus.INVALID);
         List<Node> waitNodeList = nodeService.query(queryParam);
         for (Node node : waitNodeList) {
             String wrapperId = node.getWrapperId();
             if (wrapperId != null) {
                 // 需要先确保 wrapper 进入 query 阶段
                 Node wrapperNode = nodeService.getById(wrapperId);
-                if (wrapperNode.getStatus().equals(NodeStatus.INVALID) ||
-                        wrapperNode.getStatus().equals(NodeStatus.INIT)) {
+                if (wrapperNode.getNodeStatus().equals(NodeStatus.INVALID) ||
+                        wrapperNode.getNodeStatus().equals(NodeStatus.INIT)) {
                     // 前序节点还未还是
                     continue;
                 }
@@ -111,23 +111,23 @@ public class NodeRunnerController {
             String preId = node.getPreId();
             if (preId == null) {
                 // 没有前序阶段, 可以继续执行
-                node.setStatus(NodeStatus.INIT);
+                node.setNodeStatus(NodeStatus.INIT);
                 nodeService.save(node);
                 continue;
             }
 
             // 如果有前序节点, 那么只有在前序阶段成功的情况下, 才会继续往下走
             Node preNode = nodeService.getById(preId);
-            if (preNode.getStatus().equals(NodeStatus.SUCCESS)) {
-                node.setStatus(NodeStatus.INIT);
+            if (preNode.getNodeStatus().equals(NodeStatus.SUCCESS)) {
+                node.setNodeStatus(NodeStatus.INIT);
                 nodeService.save(node);
                 return;
-            } else if (preNode.getStatus().equals(NodeStatus.FAIL)) {
-                node.setStatus(NodeStatus.SKIPPED);
+            } else if (preNode.getNodeStatus().equals(NodeStatus.FAIL)) {
+                node.setNodeStatus(NodeStatus.SKIPPED);
                 nodeService.save(node);
                 return;
-            } else if (preNode.getStatus().equals(NodeStatus.SKIPPED)) {
-                node.setStatus(NodeStatus.SKIPPED);
+            } else if (preNode.getNodeStatus().equals(NodeStatus.SKIPPED)) {
+                node.setNodeStatus(NodeStatus.SKIPPED);
                 nodeService.save(node);
                 return;
             }
@@ -141,7 +141,7 @@ public class NodeRunnerController {
         // 如果一个节点的前驱节点全部结束, 那么此节点结束
         // 本来可以通过 event driver 驱动的, 这里为了简单期间, 先搞成定时任务
         Node queryParam = new Node();
-        queryParam.setStatus(NodeStatus.INVALID);
+        queryParam.setNodeStatus(NodeStatus.INVALID);
 
         List<Node> waitNodeList = nodeService.query(queryParam);
         for (Node node : waitNodeList) {
@@ -151,16 +151,16 @@ public class NodeRunnerController {
                 continue;
             }
             Node preNode = nodeService.getById(preId);
-            if (preNode.getStatus().equals(NodeStatus.SUCCESS)) {
-                node.setStatus(NodeStatus.INIT);
+            if (preNode.getNodeStatus().equals(NodeStatus.SUCCESS)) {
+                node.setNodeStatus(NodeStatus.INIT);
                 nodeService.save(node);
                 return;
-            } else if (preNode.getStatus().equals(NodeStatus.FAIL)) {
-                node.setStatus(NodeStatus.SKIPPED);
+            } else if (preNode.getNodeStatus().equals(NodeStatus.FAIL)) {
+                node.setNodeStatus(NodeStatus.SKIPPED);
                 nodeService.save(node);
                 return;
-            } else if (preNode.getStatus().equals(NodeStatus.SKIPPED)) {
-                node.setStatus(NodeStatus.SKIPPED);
+            } else if (preNode.getNodeStatus().equals(NodeStatus.SKIPPED)) {
+                node.setNodeStatus(NodeStatus.SKIPPED);
                 nodeService.save(node);
                 return;
             }

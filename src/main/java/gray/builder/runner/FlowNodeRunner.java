@@ -55,7 +55,7 @@ public class FlowNodeRunner {
 //        nodeData.setFieldName(FLOW_I);
 //        nodeData.setContent(subFlowId);
 //        flowNode.getNodeDataList().add(nodeData);
-        flowNode.setStatus(NodeStatus.QUERY);
+        flowNode.setNodeStatus(NodeStatus.QUERY);
         nodeService.save(flowNode);
         // todo 存储到数据库
         return StageResult.SuccessResult();
@@ -69,19 +69,19 @@ public class FlowNodeRunner {
         }
 
         for (Node subFlowNode : subFlowList) {
-            if (subFlowNode.getStatus().equals(NodeStatus.FAIL)) {
+            if (subFlowNode.getNodeStatus().equals(NodeStatus.FAIL)) {
                 // 有失败的, 最终为失败
-                flowNode.setStatus(NodeStatus.FAIL);
+                flowNode.setNodeStatus(NodeStatus.FAIL);
                 nodeService.save(flowNode);
                 return StageResult.FailResult();
             }
-            if (!subFlowNode.getStatus().equals(NodeStatus.SUCCESS)) {
+            if (!subFlowNode.getNodeStatus().equals(NodeStatus.SUCCESS)) {
                 return StageResult.RunningResult();
             }
         }
 
         // 全部都是 success
-        flowNode.setStatus(NodeStatus.SUCCESS);
+        flowNode.setNodeStatus(NodeStatus.SUCCESS);
         nodeService.save(flowNode);
         return StageResult.SuccessResult();
     }

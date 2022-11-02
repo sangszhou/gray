@@ -21,7 +21,7 @@ public class AtomTaskBuilder extends TaskBuilder {
     @Override
     public Node build() {
         // set flow id 是怎么配置的?
-        atomNode.setType(NodeType.ATOM);
+        atomNode.setNodeType(NodeType.ATOM);
         atomNode.setTaskClzName(this.cls.getName());
         atomNode.setNodeName(this.name);
         atomNode.setFlowId(getFlowContext().getFlowId());
@@ -30,10 +30,10 @@ public class AtomTaskBuilder extends TaskBuilder {
         // 静态属性现在归到 nodeData 里存储了
         for (ParamLinker paramLinker : this.paramLinkerList) {
             if (paramLinker.getParamLinkerType().equals(ParamLinkerType.STATIC)) {
-                NodeData staticField = ParamLinkUtils.buildStatic(
+                OutputData staticField = ParamLinkUtils.buildStatic(
                         paramLinker.getDestFieldName(),
                         paramLinker.getSourceValueData());
-                atomNode.getNodeDataList().add(staticField);
+                atomNode.getOutputDataList().add(staticField);
             }
         }
         return atomNode;
@@ -48,8 +48,8 @@ public class AtomTaskBuilder extends TaskBuilder {
 //        paramLinker.setSourceValueType(destFieldValue.getClass().getSimpleName());
 //        this.thisNode.getParamLinkerList().add(paramLinker);
 
-        NodeData nodeData = ParamLinkUtils.buildStatic(destFieldName, destFieldValue);
-        this.atomNode.getNodeDataList().add(nodeData);
+        OutputData nodeData = ParamLinkUtils.buildStatic(destFieldName, destFieldValue);
+        this.atomNode.getOutputDataList().add(nodeData);
         return this;
     }
 

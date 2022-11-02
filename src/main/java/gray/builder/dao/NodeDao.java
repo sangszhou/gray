@@ -1,4 +1,4 @@
-package gray.builder;
+package gray.builder.dao;
 
 import gray.engine.Node;
 import gray.engine.NodeStatus;

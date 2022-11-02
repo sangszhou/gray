@@ -49,7 +49,7 @@ public class FlowService {
 
     public NodeStatus flowStatus(String flowId) {
         Node queryParam = new Node();
-        queryParam.setType(NodeType.ROOT);
+        queryParam.setNodeType(NodeType.ROOT);
         queryParam.setFlowId(flowId);
         Node rootNode = nodeService.getByName(flowId, "ROOT");
         if (rootNode == null) {
@@ -57,7 +57,7 @@ public class FlowService {
             return null;
         }
 
-        return rootNode.getStatus();
+        return rootNode.getNodeStatus();
     }
 
     public void queryFlowResult(String flowId) {
@@ -66,7 +66,7 @@ public class FlowService {
 
     public List<Node> queryByParentFlowId(String parentFlowId) {
         Node queryParam = new Node();
-        queryParam.setType(NodeType.ROOT);
+        queryParam.setNodeType(NodeType.ROOT);
         queryParam.setParentFlowId(parentFlowId);
 
         List<Node> subFlowList = nodeService.query(queryParam);
@@ -96,12 +96,6 @@ public class FlowService {
             node.setParentFlowId(flowInput.getData()
                     .get(Constants.INNER_PARENT_FLOW_ID).toString());
         }
-
-        // fast path, 但似乎没必要, 反而可能会引入 bug
-//        if (CollectionUtils.isEmpty(node.getSubNodeList())) {
-//            nodeService.save(node);
-//            return;
-//        }
 
         for (Node subNode : node.getSubNodeList()) {
             persistNode(subNode, flowInput);

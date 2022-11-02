@@ -33,10 +33,10 @@ public class BasicNodeRunner {
 
             if (stageResult.getCode() == 2) {
                 // success, 进入到 query 阶段
-                basicNode.setStatus(NodeStatus.QUERY);
+                basicNode.setNodeStatus(NodeStatus.QUERY);
             } else {
                 // todo fail 应该怎么处理呢?
-                basicNode.setStatus(NodeStatus.FAIL);
+                basicNode.setNodeStatus(NodeStatus.FAIL);
             }
             nodeService.save(basicNode);
         } catch (InstantiationException exp) {
@@ -52,10 +52,10 @@ public class BasicNodeRunner {
             StageResult stageResult = taskInst.query();
             this.saveOutput(basicNode, taskInst);
             if (stageResult.getCode() == 2) {
-                basicNode.setStatus(NodeStatus.SUCCESS);
+                basicNode.setNodeStatus(NodeStatus.SUCCESS);
                 nodeService.save(basicNode);
             } else if (stageResult.getCode() == 3){
-                basicNode.setStatus(NodeStatus.FAIL);
+                basicNode.setNodeStatus(NodeStatus.FAIL);
                 nodeService.save(basicNode);
             } else {
                 // continue
@@ -86,19 +86,19 @@ public class BasicNodeRunner {
             Object fieldValue = theField.get(taskInst);
             String fieldName = theField.getName();
 
-            Optional<NodeData> existingNodeData = basicNode.getNodeDataList().stream()
+            Optional<OutputData> existingNodeData = basicNode.getOutputDataList().stream()
                     .filter(it -> it.getNodeDataType().equals(NodeDataType.OUTPUT))
                     .filter(it -> it.getFieldName().equals(fieldName))
                     .findFirst();
             if (existingNodeData.isPresent()) {
                 existingNodeData.get().setContent(JSON.toJSONString(fieldValue));
             } else {
-                NodeData nodeData = new NodeData();
+                OutputData nodeData = new OutputData();
                 nodeData.setNodeDataType(NodeDataType.OUTPUT);
                 nodeData.setFieldName(fieldName);
                 nodeData.setClassName(fieldValue.getClass().getName());
                 nodeData.setContent(JSON.toJSONString(fieldValue));
-                basicNode.getNodeDataList().add(nodeData);
+                basicNode.getOutputDataList().add(nodeData);
             }
         }
     }
@@ -108,7 +108,7 @@ public class BasicNodeRunner {
         for (Field theField: fieldList) {
             theField.setAccessible(true);
             boolean foundMatch = false;
-            for (NodeData nodeData: basicNode.getNodeDataList()) {
+            for (OutputData nodeData: basicNode.getOutputDataList()) {
                 // 静态传值
                 if (nodeData.getFieldName().equals(theField.getName())) {
                     Object dataWithType = JSON.parseObject(nodeData.getContent(), theField.getType());
@@ -127,7 +127,7 @@ public class BasicNodeRunner {
                         logger.error("failed to found node by flow id: [{}], task name: [{}]",
                                 basicNode.getFlowId(), sourceTaskName);
                     }
-                    Optional<NodeData> theNodeData = linkedNode.getNodeDataList().stream()
+                    Optional<OutputData> theNodeData = linkedNode.getOutputDataList().stream()
                             .filter(it -> it.getNodeDataType().equals(NodeDataType.OUTPUT))
                             .filter(it -> it.getFieldName().equals(paramLinker.getSourceFieldName()))
                             .findFirst();
@@ -154,7 +154,7 @@ public class BasicNodeRunner {
         for (Field theField: fieldList) {
             theField.setAccessible(true);
 
-            Optional<NodeData> existingNodeData = basicNode.getNodeDataList().stream()
+            Optional<OutputData> existingNodeData = basicNode.getOutputDataList().stream()
                     .filter(it -> it.getFieldName().equals(theField.getName()))
                     .filter(it -> it.getNodeDataType().equals(NodeDataType.OUTPUT))
                     .findFirst();

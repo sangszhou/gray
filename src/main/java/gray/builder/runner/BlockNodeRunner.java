@@ -1,6 +1,5 @@
 package gray.builder.runner;
 
-import gray.builder.NodeDao;
 import gray.domain.StageResult;
 import gray.engine.Node;
 import gray.engine.NodeStatus;
@@ -16,7 +15,7 @@ public class BlockNodeRunner {
     NodeService nodeService;
 
     public StageResult trigger(Node blockNode) {
-        blockNode.setStatus(NodeStatus.QUERY);
+        blockNode.setNodeStatus(NodeStatus.QUERY);
         // stage result set to success
         return new StageResult();
     }
@@ -28,25 +27,25 @@ public class BlockNodeRunner {
 
         List<Node> wrappedNode = nodeService.query(queryParamNode);
         if (wrappedNode.size() == 0) {
-            wrapNode.setStatus(NodeStatus.SUCCESS);
+            wrapNode.setNodeStatus(NodeStatus.SUCCESS);
             nodeService.save(wrapNode);
             return;
         }
 
         boolean hasFail = false;
         for (Node node : wrappedNode) {
-            if (node.getStatus() != NodeStatus.FAIL && node.getStatus() != NodeStatus.SUCCESS) {
+            if (node.getNodeStatus() != NodeStatus.FAIL && node.getNodeStatus() != NodeStatus.SUCCESS) {
                 return;
             }
-            if (node.getStatus().equals(NodeStatus.FAIL)) {
+            if (node.getNodeStatus().equals(NodeStatus.FAIL)) {
                 hasFail = true;
             }
         }
 
         if (hasFail) {
-            wrapNode.setStatus(NodeStatus.FAIL);
+            wrapNode.setNodeStatus(NodeStatus.FAIL);
         } else {
-            wrapNode.setStatus(NodeStatus.SUCCESS);
+            wrapNode.setNodeStatus(NodeStatus.SUCCESS);
         }
 
         nodeService.save(wrapNode);

@@ -14,14 +14,14 @@ public class SeqTaskBuilder extends TaskBuilder {
     List<Node> subNodeList = new LinkedList<>();
     FlowContext flowContext;
     public SeqTaskBuilder(FlowContext flowContext) {
-        sequenceNode.setType(NodeType.SEQUENCE);
+        sequenceNode.setNodeType(NodeType.SEQUENCE);
         this.flowContext = flowContext;
     }
 
     @Override
     public Node build() {
         sequenceNode.setFlowId(this.flowContext.getFlowId());
-        sequenceNode.setStatus(NodeStatus.INVALID);
+        sequenceNode.setNodeStatus(NodeStatus.INVALID);
         sequenceNode.setNodeName(Constants.INNER_NODE_NAME_SEQUENCE);
         for (Node node : subNodeList) {
             sequenceNode.getSubNodeList().add(node);

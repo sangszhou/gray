@@ -20,11 +20,12 @@ public class Node {
     String preId;
     String wrapperId;
     // 0 -> atomic?, 1 -> many, 2 -> block 类型, 3 -> flow?
-    NodeType type;
+    NodeType nodeType;
     // 初始化为 invalid
-    NodeStatus status = NodeStatus.INVALID;
+    NodeStatus nodeStatus = NodeStatus.INVALID;
     List<ParamLinker> paramLinkerList = new LinkedList<>();
-    List<NodeData> nodeDataList = new LinkedList<>();
+
+    List<OutputData> outputDataList = new LinkedList<>();
 
     public String getParentFlowId() {
         return parentFlowId;
@@ -34,12 +35,12 @@ public class Node {
         this.parentFlowId = parentFlowId;
     }
 
-    public List<NodeData> getNodeDataList() {
-        return nodeDataList;
+    public List<OutputData> getOutputDataList() {
+        return outputDataList;
     }
 
-    public void setNodeDataList(List<NodeData> nodeDataList) {
-        this.nodeDataList = nodeDataList;
+    public void setOutputDataList(List<OutputData> outputDataList) {
+        this.outputDataList = outputDataList;
     }
 
     public List<ParamLinker> getParamLinkerList() {
@@ -66,12 +67,12 @@ public class Node {
         this.nodeName = nodeName;
     }
 
-    public NodeStatus getStatus() {
-        return status;
+    public NodeStatus getNodeStatus() {
+        return nodeStatus;
     }
 
-    public void setStatus(NodeStatus status) {
-        this.status = status;
+    public void setNodeStatus(NodeStatus nodeStatus) {
+        this.nodeStatus = nodeStatus;
     }
 
     List<Node> subNodeList = new LinkedList<>();
@@ -116,12 +117,12 @@ public class Node {
         this.wrapperId = wrapperId;
     }
 
-    public NodeType getType() {
-        return type;
+    public NodeType getNodeType() {
+        return nodeType;
     }
 
-    public void setType(NodeType type) {
-        this.type = type;
+    public void setNodeType(NodeType nodeType) {
+        this.nodeType = nodeType;
     }
 
     public String getPreId() {

@@ -3,6 +3,7 @@ package gray.domain;
 import gray.engine.NodeStatus;
 import gray.engine.NodeType;
 
+// 存储态, 是
 public class NodePo {
     // long id 是给定的类型, 写到数据库以后才能返回
     long id;
@@ -18,8 +19,26 @@ public class NodePo {
     String wrapperId;
     // 0 -> parent 外层, 1 -> many, 2 -> block 类型
     // 这个字段有用吗?
-    NodeType type;
-    NodeStatus status;
+    String nodeType;
+
+    public String getNodeType() {
+        return nodeType;
+    }
+
+    public void setNodeType(String nodeType) {
+        this.nodeType = nodeType;
+    }
+
+    public String getNodeStatus() {
+        return nodeStatus;
+    }
+
+    public void setNodeStatus(String nodeStatus) {
+        this.nodeStatus = nodeStatus;
+    }
+
+    String nodeStatus;
+
 
     String paramLinkList;
     // node data 列表
@@ -92,21 +111,7 @@ public class NodePo {
         this.wrapperId = wrapperId;
     }
 
-    public NodeType getType() {
-        return type;
-    }
 
-    public void setType(NodeType type) {
-        this.type = type;
-    }
-
-    public NodeStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(NodeStatus status) {
-        this.status = status;
-    }
 
     public String getParamLinkList() {
         return paramLinkList;

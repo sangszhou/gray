@@ -1,4 +1,4 @@
-package gray.builder;
+package gray.builder.dao;
 
 import gray.engine.Node;
 import gray.engine.NodeStatus;
@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,7 +22,7 @@ public class NodeDaoInMem implements NodeDao {
 
     @Override
     public void save(Node node) {
-        logger.info("save node {},  {}, {}, {}", node.getType(), node.getId(), node.getPreId(), node.getWrapperId());
+        logger.info("save node {},  {}, {}, {}", node.getNodeType(), node.getId(), node.getPreId(), node.getWrapperId());
         nodeList.add(node);
     }
 
@@ -45,7 +44,7 @@ public class NodeDaoInMem implements NodeDao {
     public List<Node> queryByStatus(NodeStatus status) {
         List<Node> nodes = new LinkedList<>();
         for (Node node : nodeList) {
-            if (node.getStatus().equals(status)) {
+            if (node.getNodeStatus().equals(status)) {
                 nodes.add(node);
             }
         }
@@ -56,10 +55,10 @@ public class NodeDaoInMem implements NodeDao {
     public List<Node> query(Node nodeSelector) {
         List<Node> nodes = new LinkedList<>();
         for (Node node : nodeList) {
-            if (nodeSelector.getType() != null && !nodeSelector.getType().equals(node.getType())) {
+            if (nodeSelector.getNodeType() != null && !nodeSelector.getNodeType().equals(node.getNodeType())) {
                 continue;
             }
-            if (nodeSelector.getStatus() != null && !nodeSelector.getStatus().equals(node.getStatus())) {
+            if (nodeSelector.getNodeStatus() != null && !nodeSelector.getNodeStatus().equals(node.getNodeStatus())) {
                 continue;
             }
 

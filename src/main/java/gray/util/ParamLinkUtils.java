@@ -1,12 +1,12 @@
 package gray.util;
 
 import com.alibaba.fastjson.JSON;
-import gray.engine.NodeData;
+import gray.engine.OutputData;
 import gray.engine.NodeDataType;
 
 public class ParamLinkUtils {
-    public static NodeData buildStatic(String destFieldName, Object data) {
-        NodeData nodeData = new NodeData();
+    public static OutputData buildStatic(String destFieldName, Object data) {
+        OutputData nodeData = new OutputData();
         nodeData.setNodeDataType(NodeDataType.INPUT);
         nodeData.setFieldName(destFieldName);
         nodeData.setClassName(data.toString());

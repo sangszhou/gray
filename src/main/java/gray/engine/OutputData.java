@@ -1,7 +1,7 @@
 package gray.engine;
 
 // 存储序列化好的值
-public class NodeData {
+public class OutputData {
     String className;
     String content;
     // task 字段名
