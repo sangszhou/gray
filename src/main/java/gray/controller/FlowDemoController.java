@@ -26,6 +26,20 @@ public class FlowDemoController {
         return flowId;
     }
 
+    @PostMapping("/flow/seq/run")
+    public String runSeqFlow() {
+        return "";
+    }
+
+    @PostMapping("/flow/par/run")
+    public String runParFlow() {
+        return "";
+    }
+    @PostMapping("/flow/seq/run")
+    public String runSubFlow() {
+        return "";
+    }
+
     @PostMapping("/v1/deploy/apollo")
     public String apolloDeployFlow(@RequestBody ApolloDeployReq req) {
         FlowInput flowInput = new FlowInput();

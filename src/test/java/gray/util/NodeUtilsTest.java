@@ -7,7 +7,6 @@ import org.junit.Test;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.*;
 
 public class NodeUtilsTest {
 
@@ -18,7 +17,6 @@ public class NodeUtilsTest {
         Node cpyNode = NodeUtils.convertNode(nodePo);
         System.out.println("finish");
     }
-
 
     Node initNode() {
         Node node = new Node();

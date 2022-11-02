@@ -8,6 +8,8 @@ import gray.builder.annotation.FlowParam;
 import gray.builder.types.RootTaskBuilder;
 import gray.domain.FlowContext;
 import gray.domain.FlowInput;
+import gray.util.IdUtils;
+import org.springframework.util.IdGenerator;
 
 import java.util.UUID;
 
@@ -23,7 +25,7 @@ public class SimpleComposer extends FlowBuilder {
     public RootTaskBuilder doBuild(FlowInput flowInput) {
         FlowContext flowContext = new FlowContext();
         flowContext.setFlowInput(flowInput);
-        flowContext.setFlowId(UUID.randomUUID().toString());
+        flowContext.setFlowId(IdUtils.generateId("flow"));
 
         RootTaskBuilder root = new RootTaskBuilder(flowContext);
 
