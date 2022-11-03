@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.LinkedList;
 import java.util.List;
 
-@Service
+//@Service
 public class NodeDaoInMem implements NodeDao {
     Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -21,7 +21,7 @@ public class NodeDaoInMem implements NodeDao {
 //    }
 
     @Override
-    public void save(Node node) {
+    public void insert(Node node) {
         logger.info("save node {},  {}, {}, {}", node.getNodeType(), node.getId(), node.getPreId(), node.getWrapperId());
         nodeList.add(node);
     }

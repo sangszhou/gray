@@ -1,13 +1,15 @@
 package gray.engine;
 
 
+import gray.util.IdUtils;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
 // 还是逻辑态的对象
 public class Node {
-    String id = UUID.randomUUID().toString();
+    String id = IdUtils.generateId("node");
     // 所属的 flow id
     String flowId;
     // 如果是子流程, 会有 parent flow id

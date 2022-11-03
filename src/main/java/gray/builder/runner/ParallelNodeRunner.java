@@ -27,7 +27,7 @@ public class ParallelNodeRunner {
         List<Node> wrappedNode = nodeDao.query(queryParamNode);
         if (wrappedNode.size() == 0) {
             wrapNode.setNodeStatus(NodeStatus.SUCCESS);
-            nodeDao.save(wrapNode);
+            nodeDao.insert(wrapNode);
             return;
         }
 
@@ -47,7 +47,7 @@ public class ParallelNodeRunner {
             wrapNode.setNodeStatus(NodeStatus.SUCCESS);
         }
 
-        nodeDao.save(wrapNode);
+        nodeDao.insert(wrapNode);
     }
 }
 

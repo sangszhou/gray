@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://mysql-sit-devops-rs01-master.int.xiaohongshu.com:33071/riskfree?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true
+    username: riskfree_rw
+    password: nC2d2dyWtM3dNT*L

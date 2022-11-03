@@ -6,7 +6,7 @@ import gray.engine.NodeStatus;
 import java.util.List;
 
 public interface NodeDao {
-    void save(Node node);
+    void insert(Node node);
 
     Node getById(String id);
 

@@ -5,18 +5,29 @@ import gray.domain.NodePo;
 import gray.engine.Node;
 import gray.engine.NodeStatus;
 import gray.engine.NodeType;
+import gray.util.NodeUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class NodeDaoMysql implements NodeDao{
-    @Override
-    public void save(Node node) {
 
+    @Autowired
+    NodePoDao nodePoDao;
+
+    @Override
+    public void insert(Node node) {
+        NodePo nodePo = NodeUtils.convertNodePo(node);
+        nodePoDao.insert(nodePo);
     }
 
     @Override
     public Node getById(String id) {
-        return null;
+        NodePo nodePo = nodePoDao.get(id);
+        Node node = NodeUtils.convertNode(nodePo);
+        return node;
     }
 
     @Override

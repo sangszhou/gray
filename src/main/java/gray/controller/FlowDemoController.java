@@ -1,6 +1,6 @@
 package gray.controller;
 
-import gray.demo.SimpleComposer;
+import gray.demo.AtomNodeUpgradeFlow;
 import gray.builder.flow.FlowService;
 import gray.demo.apollo.v1.flow.ApolloGrayDeployComposer;
 import gray.demo.apollo.v2.flow.ApolloGrayBatchComposer;
@@ -9,20 +9,35 @@ import gray.demo.expansion.v1.flow.AppExpansionFlowV1;
 import gray.domain.ApolloDeployReq;
 import gray.domain.AppExpansionReq;
 import gray.domain.FlowInput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 public class FlowDemoController {
+    Logger logger = LoggerFactory.getLogger(getClass());
+
     @Autowired
     FlowService flowService;
 
-    @PostMapping("/flow/run")
-    public String runFlow() {
+    @PostMapping("/flow/atom/run")
+    public String runFlow(String operatorId, String nodeIp) {
         FlowInput flowInput = new FlowInput();
-        String flowId = flowService.startFlow(SimpleComposer.class, flowInput);
+        flowInput.setOperator(operatorId);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("operatorId", operatorId);
+        params.put("nodeIp", nodeIp);
+        flowInput.setData(params);
+
+        String flowId = flowService.startFlow(AtomNodeUpgradeFlow.class, flowInput);
+        logger.info("atom run with flow id: {}", flowId);
         return flowId;
     }
 
@@ -35,7 +50,7 @@ public class FlowDemoController {
     public String runParFlow() {
         return "";
     }
-    @PostMapping("/flow/seq/run")
+    @PostMapping("/flow/sub/run")
     public String runSubFlow() {
         return "";
     }
